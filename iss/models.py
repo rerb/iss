@@ -25,7 +25,7 @@ class CountryCode(models.Model):
 
 class Domain(models.Model):
 
-    domain_id = models.Integer(primary_key=True)
+    domain_id = models.IntegerField(primary_key=True)
     name = models.CharField(max_length=1024, unique=True)
     account_count = models.IntegerField(default=0)
 
