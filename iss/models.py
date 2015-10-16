@@ -42,7 +42,8 @@ class Domain(models.Model):
         logger.debug('getting match for domain {salesforce_domain_name}'.
                      format(salesforce_domain_name=salesforce_domain.Name))
         try:
-            match = Domain.objects.get(domain_id=salesforce_domain)
+            match = Domain.objects.get(
+                domain_id=salesforce_domain.Domain_Id__c)
         except Domain.DoesNotExist:
             return None
         return match
@@ -85,8 +86,8 @@ class Domain(models.Model):
 
 class DomainToOrg(models.Model):
 
-    domain_id = models.IntegerField(primary_key=True)
-    org_id = models.IntegerField(unique=True)
+    domain_id = models.IntegerField()
+    org_id = models.IntegerField()
 
     def __repr__(self):
         return (
