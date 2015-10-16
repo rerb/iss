@@ -5,8 +5,7 @@ import datetime
 import logging
 
 import beatbox
-
-import settings
+from django.conf import settings
 
 
 logger = logging.getLogger(__name__)
