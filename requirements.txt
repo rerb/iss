@@ -1,2 +1,2 @@
-Django
-dj-database-url
+Django==1.8.4
+beatboxxx==21.5
