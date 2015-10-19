@@ -35,6 +35,8 @@ This this app is for you!
 ## Installation
 
 * Add `iss` to your project's settings.INSTALLED_APPS.
+ 
+* Run `manage.py migrate iss`.
 
 * Set the following environmental variables, used to connect to Salesforce:
 
