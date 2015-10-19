@@ -18,7 +18,7 @@ This this app is for you!
 
 * `upsert_iss_domains` is a Django management command to sync the
   Salesforce `Domain__c` objects into the ISS Domain table.  Like
-  `upsert_iss_organizations.py`, it upserts domains for Salesforce
+  `upsert_iss_organizations`, it upserts domains for Salesforce
   `Domain__c` objects that have been modified within the past seven
   days, though the number of days can be overridden by command-line
   argument.
