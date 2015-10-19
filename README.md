@@ -1,14 +1,16 @@
 # iss
 
 Want the ISS Organization and Domain data in your local database?
-This this app is for you!
+This app is for you!
 
-## These files make up the ISS/Salesforce sync.
+## These files make up the ISS/Salesforce sync
 
 * salesforce.py pulls data from Salesforce.com.
 
 * models.py includes the logic to translate from the Salesforce object
   (Account, Domain, etc.) to its matching ISS object.
+
+## Django management commands
 
 * `upsert_iss_organizations` is a Django management command to sync
   the Salesforce Account data into the ISS Organization table.  It
