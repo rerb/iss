@@ -8,7 +8,7 @@ logger = logging.getLogger(__name__)
 
 class CountryCode(models.Model):
 
-    country_name = models.CharField(max_length=256, unique=True)
+    country_name = models.CharField(max_length=255, unique=True)
     iso_country_code = models.CharField(max_length=2, unique=True)
 
     @classmethod
@@ -26,7 +26,7 @@ class CountryCode(models.Model):
 class Domain(models.Model):
 
     domain_id = models.IntegerField(primary_key=True)
-    name = models.CharField(max_length=1024, unique=True)
+    name = models.TextField(unique=True)
     account_count = models.IntegerField(default=0)
 
     def __repr__(self):
@@ -140,10 +140,10 @@ class Organization(models.Model):
     is_member = models.IntegerField(null=True, blank=True)
     member_type = models.CharField(max_length=255, blank=True)
     business_member_level = models.CharField(max_length=255, blank=True)
-    sector = models.CharField(max_length=765, blank=True)
+    sector = models.TextField(blank=True)
     org_type = models.TextField(blank=True)
     carnegie_class = models.TextField(max_length=255, blank=True)
-    class_profile = models.CharField(max_length=765, blank=True)
+    class_profile = models.TextField(blank=True)
     setting = models.CharField(max_length=33, blank=True)
     longitude = models.TextField(blank=True)
     latitude = models.TextField(blank=True)
