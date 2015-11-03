@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -14,7 +14,7 @@ class Migration(migrations.Migration):
             name='CountryCode',
             fields=[
                 ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
-                ('country_name', models.CharField(unique=True, max_length=256)),
+                ('country_name', models.CharField(unique=True, max_length=255)),
                 ('iso_country_code', models.CharField(unique=True, max_length=2)),
             ],
         ),
@@ -22,14 +22,15 @@ class Migration(migrations.Migration):
             name='Domain',
             fields=[
                 ('domain_id', models.IntegerField(serialize=False, primary_key=True)),
-                ('name', models.CharField(unique=True, max_length=1024)),
+                ('name', models.TextField(unique=True)),
                 ('account_count', models.IntegerField(default=0)),
             ],
         ),
         migrations.CreateModel(
             name='DomainToOrg',
             fields=[
-                ('domain_id', models.IntegerField(serialize=False, primary_key=True)),
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('domain_id', models.IntegerField()),
                 ('org_id', models.IntegerField()),
             ],
         ),
@@ -45,10 +46,10 @@ class Migration(migrations.Migration):
                 ('is_member', models.IntegerField(null=True, blank=True)),
                 ('member_type', models.CharField(max_length=255, blank=True)),
                 ('business_member_level', models.CharField(max_length=255, blank=True)),
-                ('sector', models.CharField(max_length=765, blank=True)),
+                ('sector', models.TextField(blank=True)),
                 ('org_type', models.TextField(blank=True)),
                 ('carnegie_class', models.TextField(max_length=255, blank=True)),
-                ('class_profile', models.CharField(max_length=765, blank=True)),
+                ('class_profile', models.TextField(blank=True)),
                 ('setting', models.CharField(max_length=33, blank=True)),
                 ('longitude', models.TextField(blank=True)),
                 ('latitude', models.TextField(blank=True)),
