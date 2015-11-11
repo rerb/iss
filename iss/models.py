@@ -263,6 +263,8 @@ class Organization(models.Model):
             else '')
         self.pilot_participant = account.STARS_Pilot_Participant__c
 
+        self.save()
+
         logger.debug('updated organization {name} ({id})'.format(
             name=self.org_name,
             id=self.account_num))
