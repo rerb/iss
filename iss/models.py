@@ -14,12 +14,13 @@ class CountryCode(models.Model):
     @classmethod
     def get_iso_country_code(cls, country_name):
         """Returns ISO 2-digit country code for `country_name`.
-        Returns None if `country_name` doesn't match any CountryCodes.
+        Returns empty string if `country_name` doesn't match any
+        CountryCodes.
         """
         try:
             country_code = CountryCode.objects.get(country_name=country_name)
         except CountryCode.DoesNotExist:
-            return None
+            return ''
         return country_code.iso_country_code
 
 
@@ -262,6 +263,8 @@ class Organization(models.Model):
             if account.Is_STARS_Participant__c
             else '')
         self.pilot_participant = account.STARS_Pilot_Participant__c
+
+        self.save()
 
         logger.debug('updated organization {name} ({id})'.format(
             name=self.org_name,
