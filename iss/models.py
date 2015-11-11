@@ -14,12 +14,13 @@ class CountryCode(models.Model):
     @classmethod
     def get_iso_country_code(cls, country_name):
         """Returns ISO 2-digit country code for `country_name`.
-        Returns None if `country_name` doesn't match any CountryCodes.
+        Returns empty string if `country_name` doesn't match any
+        CountryCodes.
         """
         try:
             country_code = CountryCode.objects.get(country_name=country_name)
         except CountryCode.DoesNotExist:
-            return None
+            return ''
         return country_code.iso_country_code
 
 
