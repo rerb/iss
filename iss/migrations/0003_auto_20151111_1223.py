@@ -267,7 +267,7 @@ def load_country_codes(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('iss', '0002_auto_20151016_1714')
+        ('iss', '0001_initial')
     ]
 
     operations = [
