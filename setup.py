@@ -19,6 +19,7 @@ setup(
         'iss',
         'iss.migrations'
     ],
+    include_package_data=True,
     classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
