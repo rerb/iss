@@ -29,6 +29,6 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Framework :: Django',
     ],
-    install_requires=["Django==1.8.4",
+    install_requires=["Django>=1.8,<1.9",
                       "beatboxxx==21.5"]
 )
