@@ -17,7 +17,6 @@ setup(
     long_description=read("README.md"),
     packages=[
         'iss',
-        'iss.migrations'
     ],
     include_package_data=True,
     classifiers=[
