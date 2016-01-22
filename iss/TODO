@@ -1,2 +1,1 @@
-* Provide fixtures to populate AthleticConference and CountryCode tables.
-* Test clearing Heroku pip download cache with version # in setup.py.
+* Provide fixtures to populate AthleticConference table.

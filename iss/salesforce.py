@@ -120,6 +120,19 @@ class Account(SalesforceObject):
             number=recently_modified_accounts.size, since=since))
         return recently_modified_accounts
 
+    @classmethod
+    def get_primary_email(cls, salesforce_id, session=None):
+        cls.session = session or cls.session or SalesforceSession()
+        query = ("SELECT Email_Address__c FROM Contact "
+                 "WHERE AccountId = '{account_id}' AND "
+                 "Member_Contact_Role__c = 'Primary Contact' "
+                 "LIMIT 1".format(account_id=salesforce_id))
+        result = cls.session.query_all(query=query)
+        try:
+            return result[0]['Email_Address__c']
+        except IndexError:
+            return ""
+
 
 class Domain(SalesforceObject):
 

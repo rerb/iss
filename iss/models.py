@@ -2,6 +2,8 @@ import logging
 
 from django.db import models
 
+from salesforce import Account
+
 
 logger = logging.getLogger(__name__)
 
@@ -160,6 +162,7 @@ class Organization(models.Model):
     stars_participant_status = models.CharField(max_length=255, blank=True)
     pilot_participant = models.IntegerField(null=True, blank=True)
     is_signatory = models.IntegerField(null=True, blank=True)
+    primary_email = models.CharField(max_length=256, blank=True)
 
     def __unicode__(self):
         return '%s (%s)' % (self.org_name, self.state)
@@ -263,6 +266,7 @@ class Organization(models.Model):
             if account.Is_STARS_Participant__c
             else '')
         self.pilot_participant = account.STARS_Pilot_Participant__c
+        self.primary_email = Account.get_primary_email(account['Id'])
 
         self.save()
 
