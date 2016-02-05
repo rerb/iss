@@ -103,10 +103,15 @@ class Account(SalesforceObject):
         """Return all Accounts modified within `days_ago` days."""
         cls.session = session or SalesforceSession()
         since_when = datetime.date.today() - datetime.timedelta(days_ago)
-        query = ('SELECT {all_fields} FROM ACCOUNT '
-                 'WHERE lastmodifieddate > {since_when}T00:00:00Z'.format(
-                     all_fields=','.join(cls.MAPPED_ACCOUNT_FIELDS),
-                     since_when=since_when.isoformat()))
+        query = ("""
+        SELECT {all_fields},
+        (SELECT Member_Contact_Role__c, Email_Address__c
+         FROM contacts WHERE Member_Contact_Role__c = 'Primary Contact'
+         LIMIT 1)
+        FROM ACCOUNT
+        WHERE lastmodifieddate > {since_when}T00:00:00Z""".format(
+            all_fields=','.join(cls.MAPPED_ACCOUNT_FIELDS),
+            since_when=since_when.isoformat()))
         return cls.session.query_all(query=query)
 
     @classmethod
@@ -119,19 +124,6 @@ class Account(SalesforceObject):
         logger.info('{number} accounts modifed in past {since} days'.format(
             number=recently_modified_accounts.size, since=since))
         return recently_modified_accounts
-
-    @classmethod
-    def get_primary_email(cls, salesforce_id, session=None):
-        cls.session = session or cls.session or SalesforceSession()
-        query = ("SELECT Email_Address__c FROM Contact "
-                 "WHERE AccountId = '{account_id}' AND "
-                 "Member_Contact_Role__c = 'Primary Contact' "
-                 "LIMIT 1".format(account_id=salesforce_id))
-        result = cls.session.query_all(query=query)
-        try:
-            return result[0]['Email_Address__c']
-        except IndexError:
-            return ""
 
 
 class Domain(SalesforceObject):

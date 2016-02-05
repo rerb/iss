@@ -266,7 +266,9 @@ class Organization(models.Model):
             if account.Is_STARS_Participant__c
             else '')
         self.pilot_participant = account.STARS_Pilot_Participant__c
-        self.primary_email = Account.get_primary_email(account['Id'])
+
+        if account.Contacts:
+            self.primary_email = account.Contacts[0]['Email_Address__c']
 
         self.save()
 
