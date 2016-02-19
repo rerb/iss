@@ -2,8 +2,6 @@ import logging
 
 from django.db import models
 
-from salesforce import Account
-
 
 logger = logging.getLogger(__name__)
 
