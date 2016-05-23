@@ -62,3 +62,19 @@ older version of openSSL than is required.  If you see an error
 similar to `ssl.SSLError: [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3
 alert handshake failure` you need to update your python and/or openSSL
 versions.
+
+Updating your openssl version so Python finds it on OSX is
+tricky. Here's what worked for me:
+
+* brew update
+
+* brew install openssl
+
+* brew link openssl --force
+
+* brew uninstall python
+
+* brew install python --with-brewed-openssl
+
+* delete and then recreate any virtualenvs that depend on the updated
+  openSSL
