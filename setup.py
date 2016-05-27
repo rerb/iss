@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name='iss',
-    version='1.0.1',
+    version='1.0.2',
     description="Ideally Single Source app for Salesforce data.",
     author='Bob Erb',
     author_email='bob.erb@aashe.org',
@@ -29,8 +29,8 @@ setup(
         'Framework :: Django',
     ],
     install_requires=["Django>=1.8,<1.9",
-                      "beatbox"],
+                      "beatbox==0.96"],
     dependency_links=[
-        'git+https://github.com/superfell/Beatbox#egg=beatbox'
+        'git+https://github.com/superfell/Beatbox@265f13a#egg=beatbox'
     ]
 )
