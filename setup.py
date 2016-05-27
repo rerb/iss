@@ -28,8 +28,7 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Framework :: Django',
     ],
-    install_requires=["Django>=1.8,<1.9",
-                      "Beatbox"],
+    install_requires=["Django>=1.8,<1.9"],
     dependency_links=[
         'git+https://github.com/superfell/Beatbox@265f13a#egg=beatbox'
     ]
