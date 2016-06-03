@@ -31,6 +31,6 @@ setup(
     install_requires=["Django>=1.8,<1.9",
                       "beatbox==0.96"],
     dependency_links=[
-        "git+https://github.com/superfell/beatbox#egg=beatbox-dev"
+        "git+https://github.com/superfell/beatbox#egg=beatbox-0.96"
     ]
 )
