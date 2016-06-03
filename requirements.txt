@@ -1,3 +1,2 @@
 Django>=1.8,<1.9
-# beatboxxx==21.5
--e git+https://github.com/superfell/Beatbox@265f13a#egg=beatbox
+-e git+https://github.com/superfell/Beatbox@0.96#egg=beatbox-0.96
