@@ -1,2 +1,2 @@
-Django>=1.8,<1.9
--e git+https://github.com/superfell/Beatbox@0.96#egg=beatbox-0.96
+Django>=1.4,<1.9
+beatbox==32.1
