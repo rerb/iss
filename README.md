@@ -18,6 +18,10 @@ This app is for you!
   modified within the past seven days.  The number of days to go back
   is settable via command-line argument.
 
+* `delete_iss_organizations` is a Django management command to delete
+  ISS Organizations that have no matching Salesforce Account (presumably
+  because the Account has been deleted).
+
 * `upsert_iss_domains` is a Django management command to sync the
   Salesforce `Domain__c` objects into the ISS Domain table.  Like
   `upsert_iss_organizations`, it upserts domains for Salesforce
