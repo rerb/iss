@@ -125,6 +125,16 @@ class Account(SalesforceObject):
             number=recently_modified_accounts.size, since=since))
         return recently_modified_accounts
 
+    @classmethod
+    def get_ids_for_all_accounts(cls, session=None):
+        """Return IDs of all Accounts.
+        """
+        cls.session = session or SalesforceSession()
+        query = ("SELECT Id FROM ACCOUNT")
+        query_result = cls.session.query_all(query=query)
+        ids = [account["Id"] for account in query_result]
+        return ids
+
 
 class Domain(SalesforceObject):
 
