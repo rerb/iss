@@ -23,7 +23,9 @@ This app is for you!
 
 * `delete_iss_organizations` is a Django management command to delete
   ISS Organizations that have no matching Salesforce Account (presumably
-  because the Account has been deleted).
+  because the Account has been deleted). __Note:__ You may want to protect
+  your foreign key relationships to Organizations from cascade delete by
+  using `on_delete=models.SET_NULL`.
 
 * `upsert_iss_domains` is a Django management command to sync the
   Salesforce `Domain__c` objects into the ISS Domain table.  Like
