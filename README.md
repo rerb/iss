@@ -1,3 +1,5 @@
+[![Issue Count](https://codeclimate.com/github/AASHE/iss/badges/issue_count.svg)](https://codeclimate.com/github/AASHE/iss)
+
 # iss
 
 Want the ISS Organization and Domain data in your local database?
