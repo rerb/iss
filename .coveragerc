@@ -1,0 +1,6 @@
+[run]
+source = iss
+omit =
+    *tests*
+    *migrations*
+    iss/management/commands/*
