@@ -1,3 +1,5 @@
+[![Issue Count](https://codeclimate.com/github/AASHE/iss/badges/issue_count.svg)](https://codeclimate.com/github/AASHE/iss)
+
 # iss
 
 Want the ISS Organization and Domain data in your local database?
@@ -16,11 +18,16 @@ This app is for you!
   the Salesforce Account data into the ISS Organization table.  It
   upserts organizations for Salesforce Accounts that have been
   modified within the past seven days.  The number of days to go back
-  is settable via command-line argument.
+  is settable via the --modified-since/-m command-line argument. To
+  upsert Organizations modified within the last 14 days, e.g., do
+  `manage.py upsert_iss_organizations -m 14`.
+  
 
 * `delete_iss_organizations` is a Django management command to delete
   ISS Organizations that have no matching Salesforce Account (presumably
-  because the Account has been deleted).
+  because the Account has been deleted). __Note:__ You may want to protect
+  your foreign key relationships to Organizations from cascade delete by
+  using `on_delete=models.SET_NULL`.
 
 * `upsert_iss_domains` is a Django management command to sync the
   Salesforce `Domain__c` objects into the ISS Domain table.  Like
@@ -52,8 +59,11 @@ This app is for you!
 
   * `SALESFORCE_SECURITY_TOKEN`
 
-## About TLS 1.2 Support (copied verbatim from https://github.com/superfell/Beatbox)
+## About TLS 1.2 Support 
 
+From https://github.com/superfell/Beatbox:
+
+<blockquote>
 During 2016 Salesforce plans to
 [disable TLS 1.0](https://help.salesforce.com/apex/HTViewSolution?id=000221207)
 support on their service.  In order for Beatbox to continue working
@@ -66,6 +76,7 @@ older version of openSSL than is required.  If you see an error
 similar to `ssl.SSLError: [SSL: SSLV3_ALERT_HANDSHAKE_FAILURE] sslv3
 alert handshake failure` you need to update your python and/or openSSL
 versions.
+</blockquote>
 
 Updating your openssl version so Python finds it on OSX is
 tricky. Here's what worked for me:
