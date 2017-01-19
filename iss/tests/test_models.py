@@ -125,28 +125,13 @@ class OrganizationTestCase(TestCase):
             self.not_matching_account.account)
         self.assertEquals(None, match)
 
-    # def test_get_organization_for_account_id(self):
-    #     """Does get_organization_for_account_id work?
-    #     """
-    #     match = Organization.get_organization_for_account_id(
-    #         self.matching_account.Id)
-    #     self.assertEquals(self.matching_org.account_num,
-    #                       match.account_num)
-    #
-    # def test_get_organization_for_account_id_no_match(self):
-    #     """Is get_organization_for_account_id graceful when there's no match?
-    #     """
-    #     match = Organization.get_organization_for_account_id(
-    #         self.not_matching_account.Id)
-    #     self.assertEquals(None, match)
-    #
-    # def test_upsert_for_account_insert(self):
-    #     """Does upsert_for_account work when it needs to insert a record?
-    #     """
-    #     match = Organization.upsert_for_account(self.not_matching_account)
-    #     self.assertEquals(self.not_matching_account.Account_Number__c,
-    #                       str(match.account_num))
-    #
+    def test_upsert_for_account_insert(self):
+        """Does upsert_for_account work when it needs to insert a record?
+        """
+        match = Organization.upsert_for_account(self.not_matching_account)
+        self.assertEquals(self.not_matching_account.Account_Number__c,
+                          str(match.account_num))
+
     # def test_upsert_for_account_update(self):
     #     """Does upsert_for_account work when it needs to update a record?
     #     """
