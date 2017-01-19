@@ -118,13 +118,13 @@ class OrganizationTestCase(TestCase):
         self.assertEquals(self.matching_org.account_num,
                           match.account_num)
 
-    # def test_get_organization_for_account_no_match(self):
-    #     """Is get_organization_for_account graceful when there's no match?
-    #     """
-    #     match = Organization.get_organization_for_account(
-    #         self.not_matching_account)
-    #     self.assertEquals(None, match)
-    #
+    def test_get_organization_for_account_no_match(self):
+        """Is get_organization_for_account graceful when there's no match?
+        """
+        match = Organization.get_organization_for_account(
+            self.not_matching_account.account)
+        self.assertEquals(None, match)
+
     # def test_get_organization_for_account_id(self):
     #     """Does get_organization_for_account_id work?
     #     """
