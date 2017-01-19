@@ -136,7 +136,7 @@ class Organization(models.Model):
         self.country_iso = CountryCode.get_iso_country_code(
             address["Country"])
 
-        self.website = account["Website"]
+        self.website = account["WebSite"]
 
         # self.carnegie_class = account.Carnegie_Classification__c
         # self.class_profile = (
