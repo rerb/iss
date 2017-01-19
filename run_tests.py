@@ -27,10 +27,12 @@ def main():
 
     # ISS  Settings:
 
-    global_settings.SALESFORCE_USERNAME = os.environ['SALESFORCE_USERNAME']
-    global_settings.SALESFORCE_PASSWORD = os.environ['SALESFORCE_PASSWORD']
-    global_settings.SALESFORCE_SECURITY_TOKEN = os.environ[
-        'SALESFORCE_SECURITY_TOKEN']
+    global_settings.MS_ACCESS_KEY = os.environ.get('MS_ACCESS_KEY', None)
+    global_settings.MS_SECRET_KEY = os.environ.get('MS_SECRET_KEY', None)
+    global_settings.MS_ASSOCIATION_ID = os.environ.get(
+        'MS_ASSOCIATION_ID', None)
+    global_settings.MS_USER_ID = os.environ.get('MS_USER_ID', None)
+    global_settings.MS_USER_PASS = os.environ.get('MS_USER_PASS', None)
 
     global_settings.USE_TZ = True
 
@@ -44,7 +46,8 @@ def main():
         'django.contrib.sites',
         'django.contrib.messages',
         'django.contrib.staticfiles',
-        'iss'
+        'iss',
+        'membersuite-api-client'
     )
 
     if django.VERSION > (1, 2):

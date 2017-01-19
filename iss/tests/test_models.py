@@ -1,8 +1,6 @@
 from django.test import TestCase
 
 from ..models import (CountryCode,
-                      Domain,
-                      DomainToOrg,
                       Organization)
 
 
@@ -21,111 +19,6 @@ class CountryCodeTestCase(TestCase):
         """
         self.assertEqual('', CountryCode.get_iso_country_code(
             country_name='Sorry No Erbania Here'))
-
-
-class MockSalesforceDomain(object):
-
-    def __init__(self, Domain_Id=0, Name='', Account_Count=0):
-        self.Domain_Id__c = Domain_Id
-        self.Name = Name
-        self.account_count__c = Account_Count
-
-
-class DomainTestCase(TestCase):
-
-    def setUp(self):
-        self.domain = Domain.objects.create(domain_id=500)
-        self.matching_salesforce_domain = MockSalesforceDomain(
-            Domain_Id=self.domain.domain_id,
-            Name='aashe.org',
-            Account_Count=1)
-        self.not_matching_salesforce_domain = MockSalesforceDomain(
-            Domain_Id=600,
-            Name='aashe.net',
-            Account_Count=2)
-
-    def test_get_match(self):
-        """Does get_match work?
-        """
-        match = Domain.get_match(
-            salesforce_domain=self.matching_salesforce_domain)
-        self.assertEqual(self.domain.domain_id, match.domain_id)
-
-    def test_get_match_when_no_match(self):
-        """Does get_match respond gracefully when there's no match?
-        """
-        match = Domain.get_match(
-            salesforce_domain=self.not_matching_salesforce_domain)
-        self.assertEqual(None, match)
-
-    def test_upsert_insert(self):
-        """Does upsert work when it requires an insert?
-        """
-        match = Domain.upsert(self.not_matching_salesforce_domain)
-        self.assertEqual(self.not_matching_salesforce_domain.Domain_Id__c,
-                         match.domain_id)
-
-    def test_upsert_update(self):
-        """Does upsert work when it's just an update?
-        """
-        match = Domain.upsert(self.matching_salesforce_domain)
-        self.assertEqual(self.matching_salesforce_domain.Domain_Id__c,
-                         match.domain_id)
-
-    def test_update(self):
-        """Does update work?
-        """
-        self.matching_salesforce_domain.Domain_Id__c = 1000
-        self.matching_salesforce_domain.Name = 'to.hell.with.poverty.com'
-        self.matching_salesforce_domain.account_count__c = '1000'
-        self.domain.update(self.matching_salesforce_domain)
-        self.assertEqual(self.matching_salesforce_domain.Domain_Id__c,
-                         self.domain.domain_id)
-        self.assertEqual(self.matching_salesforce_domain.Name,
-                         self.domain.name)
-        self.assertEqual(self.matching_salesforce_domain.account_count__c,
-                         str(self.domain.account_count))
-
-
-class MockSalesforceDomainToOrg(object):
-
-    def __init__(self, domain_id, account_id):
-        self.Domain__r = MockSalesforceDomain(domain_id)
-        self.Account__r = MockSalesforceAccount(account_id)
-        self.Domain__c = None
-        self.Account__c = None
-
-
-class DomainToOrgTestCase(TestCase):
-
-    def setUp(self):
-        self.domainToOrg = DomainToOrg.objects.create(domain_id=10,
-                                                      org_id=20)
-        self.match = MockSalesforceDomainToOrg(self.domainToOrg.domain_id,
-                                               self.domainToOrg.org_id)
-        self.no_match = MockSalesforceDomainToOrg(30, 40)
-
-    def test_get_match(self):
-        """Does get_match work?
-        """
-        match = DomainToOrg.get_match(self.match)
-        self.assertEqual(self.domainToOrg.domain_id,
-                         match.domain_id)
-
-    def test_get_match_no_match(self):
-        """Is get_match resiliently graceful when there's no match?
-        """
-        match = DomainToOrg.get_match(self.no_match)
-        self.assertEqual(None, match)
-
-    def test_insert(self):
-        """Does insert work?
-        """
-        new_domain_to_org = DomainToOrg.insert(self.no_match)
-        self.assertEqual(self.no_match.Domain__r.Domain_Id__c,
-                         new_domain_to_org.domain_id)
-        self.assertEqual(self.no_match.Account__r.Account_Number__c,
-                         new_domain_to_org.org_id)
 
 
 class MockSalesforceAccount(object):
