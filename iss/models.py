@@ -143,8 +143,8 @@ class Organization(models.Model):
         #     account.Carnegie_2005_Enrollment_Profile_Text__c)
 
         # self.enrollment_fte = account.FTE_Enrollment_All_Degrees__c
-        # self.latitude = account.Latitude__c
-        # self.longitude = account.Longitude__c
+        self.latitude = address["GeocodeLat"]
+        self.longitude = address["GeocodeLong"]
         # self.setting = account.Setting__c[:11]
 
         # self.business_member_level = account.Membership_Level__c

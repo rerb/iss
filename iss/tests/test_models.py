@@ -26,23 +26,55 @@ class CountryCodeTestCase(TestCase):
 class MockMembersuiteAccount(object):
 
     def __init__(self, account_num, membersuite_id):
-        self.account_num = account_num
-        self.membersuite_id = membersuite_id
-        self.org_name = 'AASHE Test Campus'
-        self.picklist_name = 'AASHE Test Campus'
-        self.street1 = '1536 Wynkoop St.'
-        self.street2 = ''
-        self.city = 'Denver'
-        self.state = 'CO'
-        self.country = 'US'
-        self.postal_code = '80202'
-        self.country_iso = CountryCode.get_iso_country_code(self.country)
-        self.website = ''
-        self.is_defunct = False
-        self.org_type = 'Four Year Institution'
-        self.stars_participant_status = ''
-        self.primary_email = ''
-
+        self.account = {
+            "ID": account_num,
+            "LocalID": membersuite_id,
+            "Name": "AASHE Test Campus",
+            "SortName": "AASHE Test Campus",
+            "Addresses": {
+                'MemberSuiteObject': [
+                    {
+                        'ClassType': 'EntityAddress',
+                        'Fields': {
+                            'KeyValueOfstringanyType': [
+                                {
+                                    'Key': 'Type',
+                                    'Value': '6faf90e4-000f-c013-958c-0b3bc8767dcd'
+                                },
+                                {
+                                    'Key': 'Address',
+                                    'Value': {
+                                        'CASSCertificationDate': None,
+                                        'CASSCertificationErrorMessage': None,
+                                        'CarrierRoute': None,
+                                        'City': 'Denver',
+                                        'Company': None,
+                                        'CongressionalDistrict': None,
+                                        'Country': 'US',
+                                        'County': None,
+                                        'DeliveryPointCheckDigit': None,
+                                        'DeliveryPointCode': None,
+                                        'GeocodeLat': None,
+                                        'GeocodeLong': None,
+                                        'LastGeocodeDate': None,
+                                        'Line1': '1536 Wynkoop St.',
+                                        'Line2': None,
+                                        'PostalCode': '80202',
+                                        'State': 'CO'
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            },
+            "country_iso": CountryCode.get_iso_country_code('US'),
+            "website": "",
+            "is_defunct": "False",
+            "org_type": "Four Year Institution",
+            "stars_participant_status": "",
+            "primary_email": "",
+        }
 
 class OrganizationTestCase(TestCase):
 
@@ -82,7 +114,7 @@ class OrganizationTestCase(TestCase):
         """Does get_organization_for_account work?
         """
         match = Organization.get_organization_for_account(
-            self.matching_account)
+            self.matching_account.account)
         self.assertEquals(self.matching_org.account_num,
                           match.account_num)
 
