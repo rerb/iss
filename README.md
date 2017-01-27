@@ -37,8 +37,8 @@ This app is for you!
 
 * Set the following environmental variables, used to connect to Salesforce:
 
-  * `SALESFORCE_USERNAME`
+  * `MS_ACCESS_KEY`
 
-  * `SALESFORCE_PASSWORD`
+  * `MS_SECRET_KEY`
 
-  * `SALESFORCE_SECURITY_TOKEN`
+  * `MS_ASSOCIATION_ID`
