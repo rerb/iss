@@ -112,11 +112,10 @@ class OrganizationTestCase(TestCase):
         self.assertEquals(self.not_matching_account.account["ID"],
                           match.account_num)
 
-    # def test_upsert_for_account_update(self):
-    #     """Does upsert_for_account work when it needs to update a record?
-    #     """
-    #     new_account_number = self.matching_account.Account_Number__c + '1'
-    #     self.matching_account.Account_Number__c = new_account_number
-    #     match = Organization.upsert_for_account(self.matching_account)
-    #     self.assertEquals(new_account_number,
-    #                       str(match.account_num))
+    def test_upsert_for_account_update(self):
+        """Does upsert_for_account work when it needs to update a record?
+        """
+        new_account_number = self.matching_account.account["ID"] + '1'
+        self.matching_account.account["ID"] = new_account_number
+        match = Organization.upsert_for_account(self.matching_account.account)
+        self.assertEquals(new_account_number, match.account_num)
