@@ -67,18 +67,6 @@ class Organization(models.Model):
                 membersuite_id=self.membersuite_id))
 
     @classmethod
-    def get_attributes_for_account(cls, account):
-        """Returns a dictionary of Organization attributes
-        from the list of dictionaries in the Membersuite Object
-        """
-        logger.debug('getting attributes for account {account}'.
-                     format(account=account["LocalID"]))
-        account_dict = {}
-        for item in account:
-            account_dict[item["Key"]] = item["Value"]
-        return account_dict
-
-    @classmethod
     def get_organization_for_account(cls, account):
         """Returns the Organization that matches the given `account`.
         Returns None if no matching account is found.
