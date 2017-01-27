@@ -108,7 +108,7 @@ class Organization(models.Model):
             matching_organization = Organization(
                 account_num=account["ID"])
             logger.debug('added organization for account with Id={Id}'.format(
-                Id=account.Id))
+                Id=account["ID"]))
         matching_organization.update_from_account(account=account)
         return matching_organization
 
@@ -120,13 +120,12 @@ class Organization(models.Model):
                          account_num=self.account_num,
                          membersuite_id=account["LocalID"]))
 
-        self.account_num = int(account["ID"])
+        self.account_num = account["ID"]
         self.membersuite_id = account["LocalID"]
         self.org_name = account["Name"]
         self.picklist_name = account["SortName"]
 
-        address = account["Addresses"]["MemberSuiteObject"]["Fields"]\
-            ["KeyValueOfstringanyType"]["1"]["Value"]
+        address = account["Mailing Address"]
         self.street1 = address["Line1"]
         self.street2 = address["Line2"]
         self.city = address["City"]
@@ -148,8 +147,7 @@ class Organization(models.Model):
         # self.setting = account.Setting__c[:11]
 
         # self.business_member_level = account.Membership_Level__c
-        # self.exclude_from_website = (
-        #     account.Exclude_Account_from_AASHE_Website__c)
+        self.exclude_from_website = False
         self.is_defunct = (
             True if STATUSES[account["Status"]] == 'Defunct'
             else False)

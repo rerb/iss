@@ -5,7 +5,6 @@ from ..models import (CountryCode,
 
 import test_org
 
-
 class CountryCodeTestCase(TestCase):
 
     def test_get_iso_country_code(self):
@@ -31,49 +30,30 @@ class MockMembersuiteAccount(object):
             "LocalID": membersuite_id,
             "Name": "AASHE Test Campus",
             "SortName": "AASHE Test Campus",
-            "Addresses": {
-                'MemberSuiteObject': [
-                    {
-                        'ClassType': 'EntityAddress',
-                        'Fields': {
-                            'KeyValueOfstringanyType': [
-                                {
-                                    'Key': 'Type',
-                                    'Value': '6faf90e4-000f-c013-958c-0b3bc8767dcd'
-                                },
-                                {
-                                    'Key': 'Address',
-                                    'Value': {
-                                        'CASSCertificationDate': None,
-                                        'CASSCertificationErrorMessage': None,
-                                        'CarrierRoute': None,
-                                        'City': 'Denver',
-                                        'Company': None,
-                                        'CongressionalDistrict': None,
-                                        'Country': 'US',
-                                        'County': None,
-                                        'DeliveryPointCheckDigit': None,
-                                        'DeliveryPointCode': None,
-                                        'GeocodeLat': None,
-                                        'GeocodeLong': None,
-                                        'LastGeocodeDate': None,
-                                        'Line1': '1536 Wynkoop St.',
-                                        'Line2': None,
-                                        'PostalCode': '80202',
-                                        'State': 'CO'
-                                    }
-                                }
-                            ]
-                        }
-                    }
-                ]
+            "Mailing Address": {
+                'CASSCertificationDate': None,
+                'CASSCertificationErrorMessage': None,
+                'CarrierRoute': None,
+                'City': 'Denver',
+                'Company': None,
+                'CongressionalDistrict': None,
+                'Country': 'US',
+                'County': None,
+                'DeliveryPointCheckDigit': None,
+                'DeliveryPointCode': None,
+                'GeocodeLat': '',
+                'GeocodeLong': '',
+                'LastGeocodeDate': '',
+                'Line1': '1536 Wynkoop St.',
+                'Line2': '',
+                'PostalCode': '80202',
+                'State': 'CO'
             },
-            "country_iso": CountryCode.get_iso_country_code('US'),
-            "website": "",
-            "is_defunct": "False",
-            "org_type": "Four Year Institution",
-            "stars_participant_status": "",
-            "primary_email": "",
+            "WebSite": "",
+            "Status": '6faf90e4-01f3-c54c-f01a-0b3bc87640ab',
+            "Type": '6faf90e4-000b-c491-b60c-0b3c5398577c',
+            "STARSCharterParticipant__c": "",
+            "EmailAddress": "",
         }
 
 class OrganizationTestCase(TestCase):
@@ -128,9 +108,9 @@ class OrganizationTestCase(TestCase):
     def test_upsert_for_account_insert(self):
         """Does upsert_for_account work when it needs to insert a record?
         """
-        match = Organization.upsert_for_account(self.not_matching_account)
-        self.assertEquals(self.not_matching_account.Account_Number__c,
-                          str(match.account_num))
+        match = Organization.upsert_for_account(self.not_matching_account.account)
+        self.assertEquals(self.not_matching_account.account["ID"],
+                          match.account_num)
 
     # def test_upsert_for_account_update(self):
     #     """Does upsert_for_account work when it needs to update a record?
