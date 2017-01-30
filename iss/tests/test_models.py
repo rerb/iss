@@ -1,4 +1,5 @@
 from django.test import TestCase
+from django.core.management import call_command
 
 from ..models import (CountryCode,
                       Organization)
@@ -119,3 +120,13 @@ class OrganizationTestCase(TestCase):
         self.matching_account.account["ID"] = new_account_number
         match = Organization.upsert_for_account(self.matching_account.account)
         self.assertEquals(new_account_number, match.account_num)
+
+
+# class ManagementCommandsTestCase(TestCase):
+#
+#     def test_upsert_iss_organizations(self):
+#         """Does the upsert_iss_organizations command work?
+#         """
+#         call_command('upsert_iss_organizations')
+#         count = len(list(Organization.objects.all()))
+#

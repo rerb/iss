@@ -7,7 +7,7 @@ import logging
 import beatbox
 from django.conf import settings
 
-from membersuite-api-client.client import ConciergeClient
+from membersuite_api_client.client import ConciergeClient
 
 
 logger = logging.getLogger(__name__)
@@ -16,11 +16,10 @@ logger = logging.getLogger(__name__)
 class MemberSuiteSession(object):
 
     def __init__(self):
-        self.client = ConciergeClient(username=settings.MS_USER_ID,
-                                 password=settings.MS_USER_PASS,
-                                 access_key=settings.MS_ACCESS_KEY,
-                                 secret_key=settings.MS_SECRET_KEY,
-                                 association_id=settings.MS_ASSOCIATION_ID)
+        self.client = ConciergeClient(access_key=settings.MS_ACCESS_KEY,
+                                      secret_key=settings.MS_SECRET_KEY,
+                                      association_id=settings.MS_ASSOCIATION_ID
+                                      )
         self.session_id = self.client.request_session()
         self.concierge_request_header = \
             self.client.construct_concierge_header(
@@ -41,8 +40,10 @@ class MemberSuiteObject(object):
 class AccountList(object):
 
     @classmethod
-    def get_accounts_modified_since(cls, days_ago, session=None):
+    def get_accounts_modified_since(cls, days_ago, session=None, get_all=False):
         """Return all Accounts modified within `days_ago` days."""
         cls.session = session or MemberSuiteSession()
         since_when = datetime.date.today() - datetime.timedelta(days_ago)
-        return cls.session.client.query_orgs(since_when=since_when)
+        qs = cls.session.client.query_orgs(since_when=since_when,
+                                           get_all=get_all)
+        return None

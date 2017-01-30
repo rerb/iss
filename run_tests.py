@@ -47,7 +47,7 @@ def main():
         'django.contrib.messages',
         'django.contrib.staticfiles',
         'iss',
-        'membersuite-api-client'
+        'membersuite_api_client'
     )
 
     if django.VERSION > (1, 2):
