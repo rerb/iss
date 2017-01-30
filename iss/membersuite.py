@@ -4,7 +4,6 @@ Parts for the MemberSuite end of the ISS/MemberSuite sync.
 import datetime
 import logging
 
-import beatbox
 from django.conf import settings
 
 from membersuite_api_client.client import ConciergeClient
@@ -46,4 +45,5 @@ class AccountList(object):
         since_when = datetime.date.today() - datetime.timedelta(days_ago)
         qs = cls.session.client.query_orgs(since_when=since_when,
                                            get_all=get_all)
-        return None
+
+        return qs

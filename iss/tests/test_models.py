@@ -57,6 +57,7 @@ class MockMembersuiteAccount(object):
             "EmailAddress": "",
         }
 
+
 class OrganizationTestCase(TestCase):
 
     def setUp(self):

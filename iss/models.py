@@ -80,7 +80,6 @@ class Organization(models.Model):
             return None
         return match
 
-
     @classmethod
     def upsert_for_account(cls, account):
         """Upsert a matching Organization for Salesforce Account `account`.
@@ -111,27 +110,28 @@ class Organization(models.Model):
         self.account_num = account["ID"]
         self.membersuite_id = account["LocalID"]
         self.org_name = account["Name"]
-        self.picklist_name = account["SortName"]
+        self.picklist_name = account["SortName"] or ''
 
-        address = account["Mailing Address"]
-        self.street1 = address["Line1"]
-        self.street2 = address["Line2"]
-        self.city = address["City"]
-        self.state = address["State"]
-        self.country = address["Country"]
-        self.postal_code = address["PostalCode"]
-        self.country_iso = CountryCode.get_iso_country_code(
-            address["Country"])
+        address = account["Mailing_Address"]
+        if address:
+            self.street1 = address["Line1"] or ''
+            self.street2 = address["Line2"] or ''
+            self.city = address["City"] or ''
+            self.state = address["State"] or ''
+            self.country = address["Country"]
+            self.postal_code = address["PostalCode"] or ''
+            self.country_iso = CountryCode.get_iso_country_code(
+                address["Country"])
+            self.latitude = address["GeocodeLat"] or ''
+            self.longitude = address["GeocodeLong"] or ''
 
-        self.website = account["WebSite"]
+        self.website = account["WebSite"] or ''
 
         # self.carnegie_class = account.Carnegie_Classification__c
         # self.class_profile = (
         #     account.Carnegie_2005_Enrollment_Profile_Text__c)
 
         # self.enrollment_fte = account.FTE_Enrollment_All_Degrees__c
-        self.latitude = address["GeocodeLat"]
-        self.longitude = address["GeocodeLong"]
         # self.setting = account.Setting__c[:11]
 
         # self.business_member_level = account.Membership_Level__c
@@ -150,7 +150,7 @@ class Organization(models.Model):
             else '')
         # self.pilot_participant = account.STARS_Pilot_Participant__c
 
-        self.primary_email = account['EmailAddress']
+        self.primary_email = account['EmailAddress'] or ''
 
         self.save()
 
