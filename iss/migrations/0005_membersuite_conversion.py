@@ -24,7 +24,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='organization',
             name='account_num',
-            field=models.TextField(primary_key=True),
+            field=models.CharField(primary_key=True, max_length=255),
         ),
         migrations.RenameField(
             model_name='organization',
