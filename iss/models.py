@@ -25,7 +25,7 @@ class CountryCode(models.Model):
 
 
 class Organization(models.Model):
-    account_num = models.TextField(primary_key=True)
+    account_num = models.CharField(primary_key=True, max_length=255)
     membersuite_id = models.IntegerField(blank=True)
     org_name = models.TextField(blank=True)
     picklist_name = models.CharField(max_length=255, blank=True)
@@ -72,10 +72,10 @@ class Organization(models.Model):
         Returns None if no matching account is found.
         """
         logger.debug('getting organization for Org {membersuite_id}'.
-                     format(membersuite_id=account["LocalID"]))
+                     format(membersuite_id=account.membersuite_id))
         try:
             match = Organization.objects.get(
-                membersuite_id=account["LocalID"])
+                account_num=account.account_num)
         except Organization.DoesNotExist:
             return None
         return match
@@ -87,45 +87,43 @@ class Organization(models.Model):
         Returns the Organization upserted.
         """
         logger.debug('upserting account {account} into organization'.format(
-            account=account["ID"]))
+            account=account.account_num))
 
         matching_organization = cls.get_organization_for_account(
             account=account)
         if not matching_organization:
             matching_organization = Organization(
-                account_num=account["ID"])
+                account_num=account.account_num)
             logger.debug('added organization for account with Id={Id}'.format(
-                Id=account["ID"]))
+                Id=account.account_num))
         matching_organization.update_from_account(account=account)
         return matching_organization
 
     def update_from_account(self, account):
-        """Update this Organization from Salesforce Account `account`.
+        """Update this Organization from Membersuite Organization object.
         """
-        logger.debug('updating organization {account_num} '
-                     'from account {membersuite_id}'.format(
+        logger.debug('updating organization {membersuite_id} '
+                     'from account {account_num}'.format(
                          account_num=self.account_num,
-                         membersuite_id=account["LocalID"]))
+                         membersuite_id=account.membersuite_id))
 
-        self.account_num = account["ID"]
-        self.membersuite_id = account["LocalID"]
-        self.org_name = account["Name"]
-        self.picklist_name = account["SortName"] or ''
+        self.account_num = account.account_num
+        self.membersuite_id = account.membersuite_id
+        self.org_name = account.org_name
+        self.picklist_name = account.picklist_name
 
-        address = account["Mailing_Address"]
-        if address:
-            self.street1 = address["Line1"] or ''
-            self.street2 = address["Line2"] or ''
-            self.city = address["City"] or ''
-            self.state = address["State"] or ''
-            self.country = address["Country"]
-            self.postal_code = address["PostalCode"] or ''
-            self.country_iso = CountryCode.get_iso_country_code(
-                address["Country"])
-            self.latitude = address["GeocodeLat"] or ''
-            self.longitude = address["GeocodeLong"] or ''
+        self.street1 = account.street1
+        self.street2 = account.street2
+        self.city = account.city
+        self.state = account.state
+        self.country = account.country
+        self.postal_code = account.postal_code
+        self.country_iso = CountryCode.get_iso_country_code(
+            self.country)
+        self.latitude = account.latitude
+        self.longitude = account.longitude
 
-        self.website = account["WebSite"] or ''
+        self.website = account.website
 
         # self.carnegie_class = account.Carnegie_Classification__c
         # self.class_profile = (
@@ -136,21 +134,16 @@ class Organization(models.Model):
 
         # self.business_member_level = account.Membership_Level__c
         self.exclude_from_website = False
-        self.is_defunct = (
-            True if STATUSES[account["Status"]] == 'Defunct'
-            else False)
+        self.is_defunct = account.is_defunct
         # self.is_member = account.is_aashe_member__c
-        self.org_type = ORG_TYPES[account["Type"]]
+        self.org_type = account.org_type
         # self.sector = account.Record_Type_Name__c,
         # self.member_type = account.Member_Type__c
         # self.is_signatory = account.PCCSignatory__c
-        self.stars_participant_status = (
-            'STARS participant'
-            if account["STARSCharterParticipant__c"]
-            else '')
+        # self.stars_participant_status = ?
         # self.pilot_participant = account.STARS_Pilot_Participant__c
 
-        self.primary_email = account['EmailAddress'] or ''
+        self.primary_email = account.primary_email
 
         self.save()
 
@@ -159,21 +152,171 @@ class Organization(models.Model):
             id=self.account_num))
 
 
-ORG_TYPES = {
-    '6faf90e4-000b-c138-b60b-0b3c5398577c': 'Business',
-    '6faf90e4-000b-c491-b60c-0b3c5398577c': 'Four Year Institution',
-    '6faf90e4-000b-c9ba-b60e-0b3c5398577c': 'Government Agency',
-    '6faf90e4-000b-cbca-b60f-0b3c5398577c': 'Graduate Institution',
-    '6faf90e4-000b-cbf6-b60d-0b3c5398577c': 'K-12 School',
-    '6faf90e4-000b-cbc0-b60b-0b3c5398577c': 'Nonprofit/NGO',
-    '6faf90e4-000b-cdda-b612-0b3c5398577c': 'Other',
-    '6faf90e4-000b-c993-b611-0b3c5398577c': 'System Office',
-    '6faf90e4-000b-c52e-b610-0b3c5398577c': 'Two Year Institution',
-}
+class OrganizationType(models.Model):
+    id = models.CharField(primary_key=True, max_length=255)
+    name = models.TextField()
 
-STATUSES = {
-    '6faf90e4-01f3-c54c-f01a-0b3bc87640ab': 'Active',
-    '6faf90e4-01f3-c0f1-4593-0b3c3ca7ff6c': 'Deceased',
-    '6faf90e4-01f3-c7ad-174c-0b3c52b7f497': 'Defunct',
-    '6faf90e4-01f3-cd50-ffed-0b3c3ca7f4fd': 'Retired',
-}
+    def __unicode__(self):
+        return self.name
+
+    @classmethod
+    def upsert_org_type(cls, org_type):
+        """
+        Upsert an OrganizationType
+
+        Returns the OrganizationType upserted
+        """
+        logger.debug('upserting org type {name} into org type'.format(
+            name=org_type.name))
+        matching_org_type = cls.get_org_type_for_id(org_type=org_type)
+        if not matching_org_type:
+            matching_org_type = OrganizationType(
+                id=org_type.id,
+                name=org_type.name,
+            )
+            logger.debug('added org type for Id={Id}'.format(
+                Id=org_type.id))
+        matching_org_type.update_org_type(org_type=org_type)
+        return matching_org_type
+
+    @classmethod
+    def get_org_type_for_id(cls, org_type):
+        """Returns the OrganizationType that matches the given ID.
+        Returns None if no matching ID is found.
+        """
+        logger.debug('getting org type for {name}'.
+                     format(name=org_type.name))
+        try:
+            match = OrganizationType.objects.get(id=org_type.id)
+        except OrganizationType.DoesNotExist:
+            return None
+        return match
+
+    def update_org_type(self, org_type):
+        """Update this OrganizationType from MemberSuite object
+        """
+        logger.debug('updating org type {name} '
+                     'from id {id}'.format(name=org_type.name, id=org_type.id))
+        self.name = org_type.name
+        self.save()
+        logger.debug('updated org type {name} ({id})'.format(name=self.name,
+                                                             id=self.id))
+    
+
+class Membership(models.Model):
+    
+    STATUSES = {
+        '6faf90e4-01f3-c54c-f01a-0b3bc87640ab': 'Active',
+        '6faf90e4-01f3-c0f1-4593-0b3c3ca7ff6c': 'Deceased',
+        '6faf90e4-01f3-c7ad-174c-0b3c52b7f497': 'Defunct',
+        '6faf90e4-01f3-cd50-ffed-0b3c3ca7f4fd': 'Retired',
+    }
+
+    id = models.CharField(primary_key=True, max_length=255)
+    owner = models.ForeignKey(Organization)
+    membership_directory_opt_out = models.BooleanField()
+    receives_membership_benefits = models.BooleanField()
+    current_dues_amount = models.CharField(max_length=255)
+    expiration_date = models.DateField()
+    type = models.CharField(max_length=255)
+    product = models.ForeignKey(MembershipProduct)
+    last_modified_date = models.DateField()
+    status = models.CharField(choices=STATUSES, max_length=255)
+    join_date = models.DateField()
+    termination_date = models.DateField()
+    renewal_date = models.DateField()
+    
+    @classmethod
+    def upsert_membership(cls, membership):
+        """
+        Upserts a Membership from MemberSuite Membership object.
+        
+        Returns the Membership upserted.
+        """
+        logger.debug('upserting org type {name} into org type'.format(
+            name=membership.name))
+        matching_membership = cls.get_membership_for_id(membership=membership)
+        if not matching_membership:
+            matching_membership = Membership(id=membership.id)
+            logger.debug('added membership for ID={id}'.format(
+                id=membership.id))
+        matching_membership.update_membership(membership=membership)
+        return matching_membership
+
+    @classmethod
+    def get_membership_for_id(cls, membership):
+        """Returns the Membership that matches the given ID.
+        Returns None if no matching ID is found.
+        """
+        logger.debug('getting org type for {id}'.
+                     format(id=membership.id))
+        try:
+            match = Membership.objects.get(id=membership.id)
+        except OrganizationType.DoesNotExist:
+            return None
+        return match
+
+    def update_membership(self, membership):
+        """Update this Membership from MemberSuite Membership object
+        """
+        logger.debug('updating membership {id}'.format(id=membership.id))
+
+        self.owner = Organization.objects.get(id=membership.owner)
+        self.membership_directory_opt_out = \
+            membership.membership_directory_opt_out
+        self.receives_membership_benefits = \
+            membership.receives_membership_benefits
+        self.current_dues_amount = membership.current_dues_amount
+        self.expiration_date = membership.expiration_date
+        self.type = membership.type
+        self.product = MembershipProduct.objects.get(id=membership.product)
+        self.last_modified_date = membership.last_modified_date
+        self.status = membership.status
+        self.join_date = membership.join_date
+        self.termination_date = membership.termination_date
+        self.renewal_date = membership.renewal_date
+        self.save()
+        logger.debug('updated membership ({id})'.format(id=self.id))
+
+
+class MembershipProduct(models.Model):
+
+    id = models.CharField(primary_key=True, max_length=255)
+    name = models.CharField(max_length=255)
+
+    @classmethod
+    def upsert_membership_product(cls, product):
+        """
+        Upserts a MembershipProduct from MemberSuite MembershipProduct object.
+
+        Returns the MembershipProduct upserted.
+        """
+        logger.debug('upserting org type {name} into org type'.format(
+            name=product.name))
+        matching_product = cls.get_product_for_id(product=product)
+        if not matching_product:
+            matching_product = MembershipProduct(id=product.id)
+            logger.debug('added membership for ID={id}'.format(
+                id=product.id))
+        matching_product.update_membership(product=product)
+        return matching_product
+
+    @classmethod
+    def get_product_for_id(cls, product):
+        """Returns the MembershipProduct that matches the given ID.
+        Returns None if no matching ID is found.
+        """
+        logger.debug('getting org type for {id}'.
+                     format(id=product.id))
+        try:
+            match = MembershipProduct.objects.get(id=product.id)
+        except MembershipProduct.DoesNotExist:
+            return None
+        return match
+
+    def update_membership_product(self, product):
+        """Update this MembershipProduct from MemberSuite object
+        """
+        logger.debug('updating membership product {id}'.format(
+            id=product.id))
+        self.name = product.name

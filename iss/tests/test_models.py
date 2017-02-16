@@ -123,11 +123,7 @@ class OrganizationTestCase(TestCase):
         self.assertEquals(new_account_number, match.account_num)
 
 
-# class ManagementCommandsTestCase(TestCase):
-#
-#     def test_upsert_iss_organizations(self):
-#         """Does the upsert_iss_organizations command work?
-#         """
-#         call_command('upsert_iss_organizations')
-#         count = len(list(Organization.objects.all()))
-#
+class MembershipTestCase(TestCase):
+
+    def setUp(self):
+        

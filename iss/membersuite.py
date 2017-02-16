@@ -7,6 +7,7 @@ import logging
 from django.conf import settings
 
 from membersuite_api_client.client import ConciergeClient
+from membersuite_api_client.organizations.services import OrganizationService
 
 
 logger = logging.getLogger(__name__)
@@ -42,8 +43,8 @@ class AccountList(object):
     def get_accounts_modified_since(cls, days_ago, session=None, get_all=False):
         """Return all Accounts modified within `days_ago` days."""
         cls.session = session or MemberSuiteSession()
+        service = OrganizationService(cls.session.client)
         since_when = datetime.date.today() - datetime.timedelta(days_ago)
-        qs = cls.session.client.query_orgs(since_when=since_when,
-                                           get_all=get_all)
+        qs = service.get_orgs(since_when=since_when)
 
         return qs
