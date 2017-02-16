@@ -6,6 +6,10 @@ from ..models import (CountryCode,
 
 import test_org
 
+from membersuite_api_client.organizations.models import Organization as MSOrg
+from membersuite_api_client.organizations.models import OrganizationType
+
+
 class CountryCodeTestCase(TestCase):
 
     def test_get_iso_country_code(self):
@@ -26,36 +30,37 @@ class CountryCodeTestCase(TestCase):
 class MockMembersuiteAccount(object):
 
     def __init__(self, account_num, membersuite_id):
-        self.account = {
-            "ID": account_num,
-            "LocalID": membersuite_id,
-            "Name": "AASHE Test Campus",
-            "SortName": "AASHE Test Campus",
-            "Mailing Address": {
-                'CASSCertificationDate': None,
-                'CASSCertificationErrorMessage': None,
-                'CarrierRoute': None,
-                'City': 'Denver',
-                'Company': None,
-                'CongressionalDistrict': None,
-                'Country': 'US',
-                'County': None,
-                'DeliveryPointCheckDigit': None,
-                'DeliveryPointCode': None,
-                'GeocodeLat': '',
-                'GeocodeLong': '',
-                'LastGeocodeDate': '',
-                'Line1': '1536 Wynkoop St.',
-                'Line2': '',
-                'PostalCode': '80202',
-                'State': 'CO'
-            },
-            "WebSite": "",
-            "Status": '6faf90e4-01f3-c54c-f01a-0b3bc87640ab',
-            "Type": '6faf90e4-000b-c491-b60c-0b3c5398577c',
-            "STARSCharterParticipant__c": "",
-            "EmailAddress": "",
-        }
+        self.organization = MSOrg(
+            {"ID": account_num,
+             "LocalID": membersuite_id,
+             "Name": "AASHE Test Campus",
+             "SortName": "AASHE Test Campus",
+             "Mailing_Address": {
+                 'CASSCertificationDate': None,
+                 'CASSCertificationErrorMessage': None,
+                 'CarrierRoute': None,
+                 'City': 'Denver',
+                 'Company': None,
+                 'CongressionalDistrict': None,
+                 'Country': 'US',
+                 'County': None,
+                 'DeliveryPointCheckDigit': None,
+                 'DeliveryPointCode': None,
+                 'GeocodeLat': '',
+                 'GeocodeLong': '',
+                 'LastGeocodeDate': '',
+                 'Line1': '1536 Wynkoop St.',
+                 'Line2': '',
+                 'PostalCode': '80202',
+                 'State': 'CO'
+             },
+             "WebSite": "",
+             "Status": '6faf90e4-01f3-c54c-f01a-0b3bc87640ab',
+             "Type": '6faf90e4-000b-c491-b60c-0b3c5398577c',
+             "STARSCharterParticipant__c": "",
+             "EmailAddress": "",
+             }
+        )
 
 
 class OrganizationTestCase(TestCase):
@@ -92,38 +97,41 @@ class OrganizationTestCase(TestCase):
         )
         self.mock_response = test_org.mock_response
 
-    def test_get_organization_for_account(self):
-        """Does get_organization_for_account work?
+    def test_get_organization_for_id(self):
+        """Does get_organization_for_id work?
         """
-        match = Organization.get_organization_for_account(
-            self.matching_account.account)
+        match = Organization.get_organization_for_id(
+            self.matching_account.organization)
         self.assertEquals(self.matching_org.account_num,
                           match.account_num)
 
-    def test_get_organization_for_account_no_match(self):
-        """Is get_organization_for_account graceful when there's no match?
+    def test_get_organization_for_id_no_match(self):
+        """Is get_organization_for_id graceful when there's no match?
         """
-        match = Organization.get_organization_for_account(
-            self.not_matching_account.account)
+        match = Organization.get_organization_for_id(
+            self.not_matching_account.organization)
         self.assertEquals(None, match)
 
-    def test_upsert_for_account_insert(self):
+    def test_upsert_organization_insert(self):
         """Does upsert_for_account work when it needs to insert a record?
         """
-        match = Organization.upsert_for_account(self.not_matching_account.account)
-        self.assertEquals(self.not_matching_account.account["ID"],
+        match = Organization.upsert_organization(
+            self.not_matching_account.organization)
+        self.assertEquals(self.not_matching_account.organization.account_num,
                           match.account_num)
 
-    def test_upsert_for_account_update(self):
+    def test_upsert_organization_update(self):
         """Does upsert_for_account work when it needs to update a record?
         """
-        new_account_number = self.matching_account.account["ID"] + '1'
-        self.matching_account.account["ID"] = new_account_number
-        match = Organization.upsert_for_account(self.matching_account.account)
-        self.assertEquals(new_account_number, match.account_num)
+        new_membersuite_id = \
+            self.matching_account.organization.membersuite_id + 1
+        self.matching_account.organization.membersuite_id = new_membersuite_id
+        match = Organization.upsert_organization(
+            self.matching_account.organization
+        )
+        self.assertEquals(new_membersuite_id, match.membersuite_id)
 
 
-class MembershipTestCase(TestCase):
-
-    def setUp(self):
-        
+# class MembershipTestCase(TestCase):
+#
+#     def setUp(self):
