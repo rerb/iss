@@ -111,16 +111,17 @@ class Organization(models.Model):
         self.org_name = org.org_name
         self.picklist_name = org.picklist_name
 
-        self.street1 = org.street1
-        self.street2 = org.street2
-        self.city = org.city
-        self.state = org.state
-        self.country = org.country
-        self.postal_code = org.postal_code
-        self.country_iso = CountryCode.get_iso_country_code(
-            self.country)
-        self.latitude = org.latitude
-        self.longitude = org.longitude
+        if org.address:
+            self.street1 = org.street1
+            self.street2 = org.street2
+            self.city = org.city
+            self.state = org.state
+            self.country = org.country
+            self.postal_code = org.postal_code
+            self.country_iso = CountryCode.get_iso_country_code(
+                self.country)
+            self.latitude = org.latitude
+            self.longitude = org.longitude
 
         self.website = org.website
 

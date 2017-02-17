@@ -48,19 +48,20 @@ class Command(BaseCommand):
 
 def upsert_organizations_for_recently_modified_accounts(
         since=7, include_aashe_in_website=False, get_all=False):
-    """Upsert organizations for SF Accounts modified in last `since` days.
+    """Upsert organizations for MS Accounts modified in last `since` days.
+
+    First syncs OrganizationType objects, then Organizations.
 
     When `include_aashe_in_website` is true, set the
     `exclude_from_website` flag on the Organization representing AASHE
     to False (0, actually).  (Added for the Hub project.)
     """
+    logger.info('upserting OrganizationTypes')
+    iss.utils.upsert_org_types()
+
     logger.info('upserting orgs for accounts modified in last {since} days'.
                 format(since=since))
-    recently_modified_accounts = (iss.membersuite.AccountList().
-                                  get_accounts_modified_since(days_ago=since,
-                                                              get_all=get_all)
-                                  )
-    iss.utils.upsert_organizations_for_accounts(recently_modified_accounts)
+    iss.utils.upsert_organizations(since, get_all)
 
     if include_aashe_in_website:
         aashe = iss.models.Organization.objects.get(org_name="AASHE")
