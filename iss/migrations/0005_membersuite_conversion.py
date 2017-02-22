@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import unicode_literals
 
-from django.db import models, migrations
+from django.db import migrations, models
 
 
 class Migration(migrations.Migration):
@@ -11,29 +11,173 @@ class Migration(migrations.Migration):
     ]
 
     operations = [
-        migrations.RenameField(
+        migrations.CreateModel(
+            name='Membership',
+            fields=[
+                ('id', models.CharField(max_length=255, serialize=False, primary_key=True)),
+                ('membership_directory_opt_out', models.BooleanField()),
+                ('receives_membership_benefits', models.BooleanField()),
+                ('current_dues_amount', models.CharField(max_length=255, null=True, blank=True)),
+                ('expiration_date', models.DateField()),
+                ('type', models.CharField(max_length=255)),
+                ('last_modified_date', models.DateField()),
+                ('status', models.CharField(max_length=255)),
+                ('join_date', models.DateField()),
+                ('termination_date', models.DateField(null=True, blank=True)),
+                ('renewal_date', models.DateField(null=True, blank=True)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='MembershipProduct',
+            fields=[
+                ('id', models.CharField(max_length=255, serialize=False, primary_key=True)),
+                ('name', models.CharField(max_length=255)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='OrganizationType',
+            fields=[
+                ('id', models.CharField(max_length=255, serialize=False, primary_key=True)),
+                ('name', models.TextField()),
+            ],
+        ),
+        migrations.RemoveField(
             model_name='organization',
-            old_name='street',
-            new_name='street1',
+            name='street',
+        ),
+        migrations.AddField(
+            model_name='organization',
+            name='membersuite_id',
+            field=models.IntegerField(null=True, blank=True),
+        ),
+        migrations.AddField(
+            model_name='organization',
+            name='street1',
+            field=models.TextField(null=True, blank=True),
         ),
         migrations.AddField(
             model_name='organization',
             name='street2',
-            field=models.TextField(blank=True),
+            field=models.TextField(null=True, blank=True),
         ),
         migrations.AlterField(
             model_name='organization',
             name='account_num',
-            field=models.CharField(primary_key=True, max_length=255),
-        ),
-        migrations.RenameField(
-            model_name='organization',
-            old_name='salesforce_id',
-            new_name='membersuite_id',
+            field=models.CharField(max_length=255, serialize=False, primary_key=True),
         ),
         migrations.AlterField(
             model_name='organization',
-            name='membersuite_id',
-            field=models.IntegerField(blank=True)
-        )
+            name='business_member_level',
+            field=models.CharField(max_length=255, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='carnegie_class',
+            field=models.TextField(max_length=255, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='city',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='class_profile',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='country',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='country_iso',
+            field=models.CharField(max_length=3, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='latitude',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='longitude',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='member_type',
+            field=models.CharField(max_length=255, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='org_name',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='org_type',
+            field=models.ForeignKey(to='iss.OrganizationType'),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='picklist_name',
+            field=models.CharField(max_length=255, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='postal_code',
+            field=models.CharField(max_length=255, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='primary_email',
+            field=models.CharField(max_length=256, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='salesforce_id',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='sector',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='setting',
+            field=models.CharField(max_length=33, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='stars_participant_status',
+            field=models.CharField(max_length=255, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='state',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='sustainability_website',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='website',
+            field=models.TextField(null=True, blank=True),
+        ),
+        migrations.AddField(
+            model_name='membership',
+            name='owner',
+            field=models.ForeignKey(to='iss.Organization'),
+        ),
+        migrations.AddField(
+            model_name='membership',
+            name='product',
+            field=models.ForeignKey(to='iss.MembershipProduct'),
+        ),
     ]

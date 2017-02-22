@@ -24,37 +24,90 @@ class CountryCode(models.Model):
         return country_code.iso_country_code
 
 
+class OrganizationType(models.Model):
+    id = models.CharField(primary_key=True, max_length=255)
+    name = models.TextField()
+
+    def __unicode__(self):
+        return self.name
+
+    @classmethod
+    def upsert_org_type(cls, org_type):
+        """
+        Upsert an OrganizationType
+
+        Returns the OrganizationType upserted
+        """
+        logger.debug('upserting org type {name} into org type'.format(
+            name=org_type.name))
+        matching_org_type = cls.get_org_type_for_id(org_type=org_type)
+        if not matching_org_type:
+            matching_org_type = OrganizationType(
+                id=org_type.id,
+                name=org_type.name,
+            )
+            logger.debug('added org type for Id={Id}'.format(
+                Id=org_type.id))
+        matching_org_type.update_org_type(org_type=org_type)
+        return matching_org_type
+
+    @classmethod
+    def get_org_type_for_id(cls, org_type):
+        """Returns the OrganizationType that matches the given ID.
+        Returns None if no matching ID is found.
+        """
+        logger.debug('getting org type for {name}'.
+                     format(name=org_type.name))
+        try:
+            match = OrganizationType.objects.get(id=org_type.id)
+        except OrganizationType.DoesNotExist:
+            return None
+        return match
+
+    def update_org_type(self, org_type):
+        """Update this OrganizationType from MemberSuite object
+        """
+        logger.debug('updating org type {name} '
+                     'from id {id}'.format(name=org_type.name, id=org_type.id))
+        self.name = org_type.name
+        self.save()
+        logger.debug('updated org type {name} ({id})'.format(name=self.name,
+                                                             id=self.id))
+
+
 class Organization(models.Model):
     account_num = models.CharField(primary_key=True, max_length=255)
-    membersuite_id = models.IntegerField(blank=True)
-    org_name = models.TextField(blank=True)
-    picklist_name = models.CharField(max_length=255, blank=True)
+    salesforce_id = models.TextField(blank=True, null=True)
+    membersuite_id = models.IntegerField(blank=True, null=True)
+    org_name = models.TextField(blank=True, null=True)
+    picklist_name = models.CharField(max_length=255, blank=True, null=True)
     exclude_from_website = models.IntegerField()
-    is_defunct = models.IntegerField(null=True, blank=True)
-    is_member = models.IntegerField(null=True, blank=True)
-    member_type = models.CharField(max_length=255, blank=True)
-    business_member_level = models.CharField(max_length=255, blank=True)
-    sector = models.TextField(blank=True)
-    org_type = models.TextField(blank=True)
-    carnegie_class = models.TextField(max_length=255, blank=True)
-    class_profile = models.TextField(blank=True)
-    setting = models.CharField(max_length=33, blank=True)
-    longitude = models.TextField(blank=True)
-    latitude = models.TextField(blank=True)
-    street1 = models.TextField(blank=True)
-    street2 = models.TextField(blank=True)
-    city = models.TextField(blank=True)
-    state = models.TextField(blank=True)
-    postal_code = models.CharField(max_length=255, blank=True)
-    country = models.TextField(blank=True)
-    country_iso = models.CharField(max_length=3, blank=True)
-    website = models.TextField(blank=True)
-    sustainability_website = models.TextField(blank=True)
+    is_defunct = models.BooleanField()
+    is_member = models.BooleanField()
+    member_type = models.CharField(max_length=255, blank=True, null=True)
+    business_member_level = models.CharField(max_length=255, blank=True, null=True)
+    sector = models.TextField(blank=True, null=True)
+    org_type = models.ForeignKey(OrganizationType)
+    carnegie_class = models.TextField(max_length=255, blank=True, null=True)
+    class_profile = models.TextField(blank=True, null=True)
+    setting = models.CharField(max_length=33, blank=True, null=True)
+    longitude = models.TextField(blank=True, null=True)
+    latitude = models.TextField(blank=True, null=True)
+    street1 = models.TextField(blank=True, null=True)
+    street2 = models.TextField(blank=True, null=True)
+    city = models.TextField(blank=True, null=True)
+    state = models.TextField(blank=True, null=True)
+    postal_code = models.CharField(max_length=255, blank=True, null=True)
+    country = models.TextField(blank=True, null=True)
+    country_iso = models.CharField(max_length=3, blank=True, null=True)
+    website = models.TextField(blank=True, null=True)
+    sustainability_website = models.TextField(blank=True, null=True)
     enrollment_fte = models.IntegerField(null=True, blank=True)
-    stars_participant_status = models.CharField(max_length=255, blank=True)
+    stars_participant_status = models.CharField(max_length=255, blank=True,
+                                                null=True)
     pilot_participant = models.IntegerField(null=True, blank=True)
     is_signatory = models.IntegerField(null=True, blank=True)
-    primary_email = models.CharField(max_length=256, blank=True)
+    primary_email = models.CharField(max_length=256, blank=True, null=True)
 
     def __unicode__(self):
         return '%s (%s)' % (self.org_name, self.state)
@@ -62,7 +115,7 @@ class Organization(models.Model):
     def __repr__(self):
         return (
             "<Organization(account_num={acct_num}, "
-            "salesforce_id='{membersuite_id}')>".format(
+            "membersuite_id='{membersuite_id}')>".format(
                 acct_num=self.account_num,
                 membersuite_id=self.membersuite_id))
 
@@ -136,7 +189,7 @@ class Organization(models.Model):
         self.exclude_from_website = False
         self.is_defunct = org.is_defunct
         # self.is_member = org.is_aashe_member__c
-        self.org_type = org.org_type
+        self.org_type = OrganizationType.objects.get(id=org.org_type)
         # self.sector = org.Record_Type_Name__c,
         # self.member_type = org.Member_Type__c
         # self.is_signatory = org.PCCSignatory__c
@@ -147,60 +200,8 @@ class Organization(models.Model):
 
         self.save()
 
-        logger.debug('updated organization {name} ({id})'.format(
-            name=self.org_name,
-            id=self.account_num))
-
-
-class OrganizationType(models.Model):
-    id = models.CharField(primary_key=True, max_length=255)
-    name = models.TextField()
-
-    def __unicode__(self):
-        return self.name
-
-    @classmethod
-    def upsert_org_type(cls, org_type):
-        """
-        Upsert an OrganizationType
-
-        Returns the OrganizationType upserted
-        """
-        logger.debug('upserting org type {name} into org type'.format(
-            name=org_type.name))
-        matching_org_type = cls.get_org_type_for_id(org_type=org_type)
-        if not matching_org_type:
-            matching_org_type = OrganizationType(
-                id=org_type.id,
-                name=org_type.name,
-            )
-            logger.debug('added org type for Id={Id}'.format(
-                Id=org_type.id))
-        matching_org_type.update_org_type(org_type=org_type)
-        return matching_org_type
-
-    @classmethod
-    def get_org_type_for_id(cls, org_type):
-        """Returns the OrganizationType that matches the given ID.
-        Returns None if no matching ID is found.
-        """
-        logger.debug('getting org type for {name}'.
-                     format(name=org_type.name))
-        try:
-            match = OrganizationType.objects.get(id=org_type.id)
-        except OrganizationType.DoesNotExist:
-            return None
-        return match
-
-    def update_org_type(self, org_type):
-        """Update this OrganizationType from MemberSuite object
-        """
-        logger.debug('updating org type {name} '
-                     'from id {id}'.format(name=org_type.name, id=org_type.id))
-        self.name = org_type.name
-        self.save()
-        logger.debug('updated org type {name} ({id})'.format(name=self.name,
-                                                             id=self.id))
+        logger.debug('updated organization {name})'.format(
+            name=org.org_name.encode('utf-8')))
 
 
 class MembershipProduct(models.Model):
@@ -222,7 +223,7 @@ class MembershipProduct(models.Model):
             matching_product = MembershipProduct(id=product.id)
             logger.debug('added membership for ID={id}'.format(
                 id=product.id))
-        matching_product.update_membership(product=product)
+        matching_product.update_membership_product(product=product)
         return matching_product
 
     @classmethod
@@ -244,23 +245,25 @@ class MembershipProduct(models.Model):
         logger.debug('updating membership product {id}'.format(
             id=product.id))
         self.name = product.name
+        self.save()
     
 
 class Membership(models.Model):
 
     id = models.CharField(primary_key=True, max_length=255)
-    owner = models.ForeignKey(Organization)
+    owner = models.ForeignKey(Organization, null=True)
     membership_directory_opt_out = models.BooleanField()
     receives_membership_benefits = models.BooleanField()
-    current_dues_amount = models.CharField(max_length=255)
+    current_dues_amount = models.CharField(max_length=255,
+                                           blank=True, null=True)
     expiration_date = models.DateField()
     type = models.CharField(max_length=255)
     product = models.ForeignKey(MembershipProduct)
     last_modified_date = models.DateField()
     status = models.CharField(max_length=255)
     join_date = models.DateField()
-    termination_date = models.DateField()
-    renewal_date = models.DateField()
+    termination_date = models.DateField(blank=True, null=True)
+    renewal_date = models.DateField(blank=True, null=True)
     
     @classmethod
     def upsert_membership(cls, membership):
@@ -269,8 +272,8 @@ class Membership(models.Model):
         
         Returns the Membership upserted.
         """
-        logger.debug('upserting org type {name} into org type'.format(
-            name=membership.name))
+        logger.debug('upserting membership {id}'.format(
+            id=membership.id))
         matching_membership = cls.get_membership_for_id(membership=membership)
         if not matching_membership:
             matching_membership = Membership(id=membership.id)
@@ -288,7 +291,7 @@ class Membership(models.Model):
                      format(id=membership.id))
         try:
             match = Membership.objects.get(id=membership.id)
-        except OrganizationType.DoesNotExist:
+        except Membership.DoesNotExist:
             return None
         return match
 
@@ -296,18 +299,21 @@ class Membership(models.Model):
         """Update this Membership from MemberSuite Membership object
         """
         logger.debug('updating membership {id}'.format(id=membership.id))
-
-        self.owner = Organization.objects.get(id=membership.owner)
+        try:
+            self.owner = Organization.objects.get(account_num=membership.owner)
+        except Organization.DoesNotExist:
+            pass
         self.membership_directory_opt_out = \
             membership.membership_directory_opt_out
         self.receives_membership_benefits = \
-            membership.receives_membership_benefits
+            membership.receives_member_benefits
         self.current_dues_amount = membership.current_dues_amount
         self.expiration_date = membership.expiration_date
         self.type = membership.type
         self.product = MembershipProduct.objects.get(id=membership.product)
         self.last_modified_date = membership.last_modified_date
-        self.status = STATUSES[membership.status]
+        if membership.status:
+            self.status = STATUSES[membership.status]
         self.join_date = membership.join_date
         self.termination_date = membership.termination_date
         self.renewal_date = membership.renewal_date
@@ -316,8 +322,10 @@ class Membership(models.Model):
 
 
 STATUSES = {
-        '6faf90e4-01f3-c54c-f01a-0b3bc87640ab': 'Active',
-        '6faf90e4-01f3-c0f1-4593-0b3c3ca7ff6c': 'Deceased',
-        '6faf90e4-01f3-c7ad-174c-0b3c52b7f497': 'Defunct',
-        '6faf90e4-01f3-cd50-ffed-0b3c3ca7f4fd': 'Retired',
-    }
+    '6faf90e4-0069-cf2c-650f-0b3c15a7d3aa': 'Expired',
+    '6faf90e4-0069-cd19-6a43-0b3c15a7c287': 'New Member',
+    '6faf90e4-0069-c450-a9c8-0b3c6a781755': 'Pending',
+    '6faf90e4-0069-c7d5-2e88-0b3c15a7cf8a': 'Reinstated',
+    '6faf90e4-0069-c2ef-6d51-0b3c15a7cb7f': 'Renewed',
+    '6faf90e4-0069-cebb-b501-0b3c15a7d742': 'Terminated',
+}
