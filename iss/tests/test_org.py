@@ -3,7 +3,7 @@ import datetime
 mock_response = [
     {
         'Key': 'Type',
-        'Value': '6faf90e4-000b-c491-b60c-0b3c5398577c'
+        'Value': '11111111-1111-1111-1111-111111111111'
     }, {
         'Key': 'BillingContactName',
         'Value': None

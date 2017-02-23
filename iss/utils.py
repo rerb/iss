@@ -17,6 +17,7 @@ def upsert_org_types():
     for org_type in org_types:
         OrganizationType.upsert_org_type(org_type)
 
+
 def upsert_organizations(since, get_all):
     """Upserts Organizations for MemberSuite objects.
     """
@@ -27,6 +28,7 @@ def upsert_organizations(since, get_all):
                          format(org=org.account_num))
             Organization.upsert_organization(org=org)
 
+
 def upsert_membership_products():
     """Upserts all MembershipProducts
     """
@@ -34,6 +36,7 @@ def upsert_membership_products():
     for product in products:
         logger.debug('upserting membership products')
         MembershipProduct.upsert_membership_product(product=product)
+
 
 def upsert_memberships(since):
     """Upserts Memberships for MemberSuite objects.
@@ -45,6 +48,7 @@ def upsert_memberships(since):
                 mem=membership.id)
             )
             Membership.upsert_membership(membership=membership)
+
 
 def upsert_membership_ownerships():
     """Upserts the owners associated with memberships

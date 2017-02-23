@@ -9,6 +9,8 @@ import test_org
 from membersuite_api_client.organizations.models import Organization as MSOrg
 from membersuite_api_client.organizations.models import OrganizationType
 
+from ..models import OrganizationType as OrgType
+
 
 class CountryCodeTestCase(TestCase):
 
@@ -56,7 +58,7 @@ class MockMembersuiteAccount(object):
              },
              "WebSite": "",
              "Status": '6faf90e4-01f3-c54c-f01a-0b3bc87640ab',
-             "Type": '6faf90e4-000b-c491-b60c-0b3c5398577c',
+             "Type": '11111111-1111-1111-1111-111111111111',
              "STARSCharterParticipant__c": "",
              "EmailAddress": "",
              }
@@ -68,7 +70,13 @@ class OrganizationTestCase(TestCase):
     def setUp(self):
         self.country_code = CountryCode.objects.create(
             country_name='Joe', iso_country_code='__')
-        self.matching_org=Organization.objects.create(
+        self.org_type_data = {
+            'ID': '11111111-1111-1111-1111-111111111111',
+            'Name': 'Test Org Type'
+        }
+        self.org_type = OrganizationType(self.org_type_data)
+        self.test_org_type = OrgType.upsert_org_type(self.org_type)
+        self.matching_org = Organization.objects.create(
             account_num='6faf90e4-000b-c491-b60c-0b3c5398577c',
             membersuite_id=6044,
             org_name='AASHE Test Campus',
@@ -82,7 +90,7 @@ class OrganizationTestCase(TestCase):
             country_iso=CountryCode.get_iso_country_code('US'),
             website='',
             is_defunct=False,
-            org_type='Four Year Institution',
+            org_type=self.test_org_type,
             stars_participant_status='',
             primary_email='',
             exclude_from_website=False,
