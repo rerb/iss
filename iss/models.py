@@ -252,8 +252,8 @@ class Membership(models.Model):
 
     id = models.CharField(primary_key=True, max_length=255)
     owner = models.ForeignKey(Organization, null=True)
-    membership_directory_opt_out = models.BooleanField()
-    receives_membership_benefits = models.BooleanField()
+    membership_directory_opt_out = models.BooleanField(default=False)
+    receives_membership_benefits = models.BooleanField(default=True)
     current_dues_amount = models.CharField(max_length=255,
                                            blank=True, null=True)
     expiration_date = models.DateField()

@@ -1,16 +1,23 @@
 from django.test import TestCase
-from django.core.management import call_command
+import datetime
 
-from ..models import (CountryCode,
-                      Organization)
+from ..models import (CountryCode, Organization, Membership,
+                      OrganizationType, MembershipProduct)
 
 import test_org
 
 from membersuite_api_client.organizations.models import Organization as MSOrg
-from membersuite_api_client.organizations.models import OrganizationType
+from membersuite_api_client.memberships.models import Membership as MSMember
+from membersuite_api_client.memberships.models import MembershipProduct \
+    as MSMemProduct
+from membersuite_api_client.organizations.models import OrganizationType \
+    as MSOrgType
 
-from ..models import OrganizationType as OrgType
 from ..membersuite import MemberSuiteSession
+from ..utils import upsert_org_types, \
+                    upsert_organizations, \
+                    upsert_membership_products, upsert_memberships, \
+                    upsert_membership_ownerships
 
 
 class CountryCodeTestCase(TestCase):
@@ -64,6 +71,23 @@ class MockMembersuiteAccount(object):
              "EmailAddress": "",
              }
         )
+        self.membership = MSMember(
+            {"ID": '22222222-2222-2222-2222-222222222222',
+             "Owner": account_num,
+             "MembershipDirectoryOptOut": False,
+             "ReceivesMemberBenefits": True,
+             "CurrentDuesAmount": "1.0",
+             "ExpirationDate": datetime.datetime.now() +
+                               datetime.timedelta(days=1),
+             "Product": '99999999-9999-9999-9999-999999999999',
+             "Type": '6faf90e4-006a-c1e7-1ac8-0b3c2f7cb3bc',
+             "LastModifiedDate": None,
+             "Status": '6faf90e4-0069-c2ef-6d51-0b3c15a7cb7f',
+             "JoinDate": datetime.datetime.now()+datetime.timedelta(days=-2),
+             "TerminationDate": None,
+             "RenewalDate": datetime.datetime.now()+datetime.timedelta(days=-1),
+             }
+        )
 
 
 class OrganizationTestCase(TestCase):
@@ -71,12 +95,27 @@ class OrganizationTestCase(TestCase):
     def setUp(self):
         self.country_code = CountryCode.objects.create(
             country_name='Joe', iso_country_code='__')
+        
+        # Set up an Organization Type
         self.org_type_data = {
             'ID': '11111111-1111-1111-1111-111111111111',
             'Name': 'Test Org Type'
         }
-        self.org_type = OrganizationType(self.org_type_data)
-        self.test_org_type = OrgType.upsert_org_type(self.org_type)
+        self.org_type = MSOrgType(self.org_type_data)
+        self.test_org_type = OrganizationType.upsert_org_type(self.org_type)
+
+        # Set up a Membership Product
+        self.product_data = {
+            "ID": '99999999-9999-9999-9999-999999999999',
+            "Name": 'Super Awesome Mega Membership'
+        }
+        self.product = MSMemProduct(self.product_data)
+        self.membership_product = MembershipProduct.objects.create(
+            id='99999999-9999-9999-9999-999999999999',
+            name='Super Awesome Mega Membership'
+        )
+        
+        # Set up an Organization based on AASHE Test Campus object
         self.matching_org = Organization.objects.create(
             account_num='6faf90e4-000b-c491-b60c-0b3c5398577c',
             membersuite_id=6044,
@@ -104,7 +143,43 @@ class OrganizationTestCase(TestCase):
             account_num='6faf90e4-000b-c491-b60c-111111111111',
             membersuite_id=1111
         )
+
+        # Set up a Membership
+        self.membership = Membership.objects.create(
+            id='22222222-2222-2222-2222-222222222222',
+            owner=Organization.get_organization_for_id(
+                self.matching_account.organization),
+            receives_membership_benefits=True,
+            status='Renewed',
+            membership_directory_opt_out=False,
+            join_date=datetime.datetime.now() + datetime.timedelta(days=-1),
+            expiration_date=datetime.datetime.now() + datetime.timedelta(
+                days=1),
+            last_modified_date=datetime.datetime.now() +
+                               datetime.timedelta(days=-1),
+            product=self.membership_product
+        )
+
         self.mock_response = test_org.mock_response
+
+    def test_get_org_type_for_id(self):
+        """Does get_org_type_for_id work?
+        """
+        match = OrganizationType.get_org_type_for_id(self.org_type)
+        self.assertEqual(match.name, 'Test Org Type')
+
+    def test_upsert_org_type(self):
+        # Should already exist in test DB
+        match = OrganizationType.objects.get(
+            id='11111111-1111-1111-1111-111111111111')
+        self.assertEqual(match.name, 'Test Org Type')
+
+        # Now change the name and upsert
+        self.org_type.name = 'New Org Type'
+        match = OrganizationType.upsert_org_type(self.org_type)
+        match = OrganizationType.objects.get(
+            id='11111111-1111-1111-1111-111111111111')
+        self.assertEqual(match.name, 'New Org Type')
 
     def test_get_organization_for_id(self):
         """Does get_organization_for_id work?
@@ -139,6 +214,59 @@ class OrganizationTestCase(TestCase):
             self.matching_account.organization
         )
         self.assertEquals(new_membersuite_id, match.membersuite_id)
+
+    def test_upsert_utils(self):
+        """Do the upsert commands within utils.py work
+        """
+        upsert_org_types()
+        qs = OrganizationType.objects.all()
+        # If the upsert command worked, we will have OrgType objects present
+        self.assertTrue(qs)
+
+        upsert_membership_products()
+        qs = MembershipProduct.objects.all()
+        # If the upsert command worked, we will have MembershipProduct objects
+
+        upsert_organizations(since=1, get_all=False)
+        upsert_memberships(since=1)
+        """ I don't even think there's a test we can do here. At best, once we
+        have a sandbox, we can test that it updates zero rows, but for now we
+        just run the command to see that no errors occur. If something goes
+        wrong, the build will fail and we will be see that it occurred here.
+        """
+
+        # Test upserting Membership-Org ownership relationships
+        upsert_membership_ownerships()
+        org = Organization.objects.get(membersuite_id=6044)
+        self.assertTrue(org.is_member)
+
+    def test_upsert_membership_product_update(self):
+        """Does upsert_membership_product work?
+        """
+        # Product should already exist in the test db from setUp()
+        match = MembershipProduct.objects.get(
+            id='99999999-9999-9999-9999-999999999999')
+        self.assertEqual(match.name, 'Super Awesome Mega Membership')
+
+        # Now change the name of it and upsert
+        self.product.name = 'New Product Name'
+        product = MembershipProduct.upsert_membership_product(self.product)
+        match = MembershipProduct.objects.get(
+            id='99999999-9999-9999-9999-999999999999')
+        self.assertEqual(match.name, 'New Product Name')
+
+    def test_get_product_for_id(self):
+        """Does get_product_for_id work?
+        """
+        match = MembershipProduct.get_product_for_id(self.product)
+        self.assertEqual(match.name, 'Super Awesome Mega Membership')
+
+    def test_get_membership_for_id(self):
+        """Does get_membership_for_id work?
+        """
+        match = Membership.get_membership_for_id(
+            self.matching_account.membership)
+        self.assertEquals(match.id, '22222222-2222-2222-2222-222222222222')
 
 
 class MembersuiteTestCase(TestCase):
