@@ -62,12 +62,10 @@ def upsert_membership_ownerships():
                 if "Leader" in membership.product.name:
                     membership.owner.business_member_level = \
                         "Business Leader"
-                    membership.owner.save()
                 if "Supporter" in membership.product.name:
                     membership.owner.business_member_level = \
                         "Business Supporter"
-                    membership.owner.save()
                 if "Affiliate" in membership.product.name:
                     membership.owner.business_member_level = \
                         "Business Affiliate"
-                    membership.owner.save()
+            membership.owner.save()
