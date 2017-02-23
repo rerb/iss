@@ -10,6 +10,7 @@ from membersuite_api_client.organizations.models import Organization as MSOrg
 from membersuite_api_client.organizations.models import OrganizationType
 
 from ..models import OrganizationType as OrgType
+from ..membersuite import MemberSuiteSession
 
 
 class CountryCodeTestCase(TestCase):
@@ -140,6 +141,10 @@ class OrganizationTestCase(TestCase):
         self.assertEquals(new_membersuite_id, match.membersuite_id)
 
 
-# class MembershipTestCase(TestCase):
-#
-#     def setUp(self):
+class MembersuiteTestCase(TestCase):
+
+    def test_membersuite_session(self):
+        """Does instantiating MemberSuiteSession work?
+        """
+        session = MemberSuiteSession()
+        self.assertTrue(session.session_id)
