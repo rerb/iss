@@ -81,11 +81,12 @@ class MockMembersuiteAccount(object):
                                datetime.timedelta(days=1),
              "Product": '99999999-9999-9999-9999-999999999999',
              "Type": '6faf90e4-006a-c1e7-1ac8-0b3c2f7cb3bc',
-             "LastModifiedDate": None,
+             "LastModifiedDate": datetime.datetime.now()-datetime.timedelta(
+                 days=1),
              "Status": '6faf90e4-0069-c2ef-6d51-0b3c15a7cb7f',
              "JoinDate": datetime.datetime.now()+datetime.timedelta(days=-2),
              "TerminationDate": None,
-             "RenewalDate": datetime.datetime.now()+datetime.timedelta(days=-1),
+             "RenewalDate": datetime.datetime.now()+datetime.timedelta(days=-1)
              }
         )
 
@@ -240,6 +241,15 @@ class OrganizationTestCase(TestCase):
         org = Organization.objects.get(membersuite_id=6044)
         self.assertTrue(org.is_member)
 
+    def test_upsert_membership_product_insert(self):
+        """Does upsert_membership_product work?
+        """
+        self.product.name = 'New Product Name'
+        product = MembershipProduct.upsert_membership_product(self.product)
+        match = MembershipProduct.objects.get(
+            id='99999999-9999-9999-9999-999999999999')
+        self.assertEqual(match.name, 'New Product Name')
+
     def test_upsert_membership_product_update(self):
         """Does upsert_membership_product work?
         """
@@ -267,6 +277,30 @@ class OrganizationTestCase(TestCase):
         match = Membership.get_membership_for_id(
             self.matching_account.membership)
         self.assertEquals(match.id, '22222222-2222-2222-2222-222222222222')
+
+    def test_upsert_membership_insert(self):
+        """Does upsert_membership work when inserting a new object?
+        """
+        Membership.upsert_membership(self.matching_account.membership)
+        match = Membership.objects.get(
+            id='22222222-2222-2222-2222-222222222222'
+        )
+        self.assertTrue(match)
+
+    def test_upsert_membership_update(self):
+        """Does upsert_membership work when updating an existing object?
+        """
+        # Should already exist and confirm field value is true to begin with
+        match = Membership.objects.get(
+            id='22222222-2222-2222-2222-222222222222')
+        self.assertTrue(match.receives_membership_benefits)
+
+        # now update it
+        self.matching_account.membership.receives_member_benefits = False
+        Membership.upsert_membership(self.matching_account.membership)
+        match = Membership.objects.get(
+            id='22222222-2222-2222-2222-222222222222')
+        self.assertFalse(match.receives_membership_benefits)
 
 
 class MembersuiteTestCase(TestCase):
