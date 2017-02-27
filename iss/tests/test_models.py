@@ -229,7 +229,7 @@ class OrganizationTestCase(TestCase):
         # If the upsert command worked, we will have MembershipProduct objects
 
         upsert_organizations(since=1, get_all=False)
-        upsert_memberships(since=1)
+        upsert_memberships(since=1, get_all=False)
         """ I don't even think there's a test we can do here. At best, once we
         have a sandbox, we can test that it updates zero rows, but for now we
         just run the command to see that no errors occur. If something goes
