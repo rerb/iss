@@ -18,8 +18,9 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
-            '-a', '--all',
-            type=bool,
+            '--all',
+            action='store_true',
+            default=False,
             dest='a',
             help='upsert all organizations'
         )

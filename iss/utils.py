@@ -38,10 +38,14 @@ def upsert_membership_products():
         MembershipProduct.upsert_membership_product(product=product)
 
 
-def upsert_memberships(since):
+def upsert_memberships(since, get_all):
     """Upserts Memberships for MemberSuite objects.
     """
-    memberships = ms_session.mem_service.get_all_memberships(since_when=since)
+    if not get_all:
+        memberships = ms_session.mem_service.get_all_memberships(
+            since_when=since)
+    else:
+        memberships = ms_session.mem_service.get_all_memberships()
     if memberships:
         for membership in memberships:
             logger.debug('upserting membership {mem}'.format(

@@ -18,6 +18,13 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument(
+            '--all',
+            action='store_true',
+            default=False,
+            dest='a',
+            help='upsert all memberships'
+        )
+        parser.add_argument(
             '-m', '--modified-within',
             type=int,
             dest='m',
@@ -29,6 +36,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         upsert_memberships_recently_modified(
             since=options['m'],
+            get_all=options['a']
         )
 
 
@@ -45,7 +53,7 @@ def upsert_memberships_recently_modified(since=7, get_all=False):
 
     logger.info('upserting memberships modified in last {since} days'.
                 format(since=since))
-    iss.utils.upsert_memberships(since)
+    iss.utils.upsert_memberships(since, get_all)
 
     logger.info('upserting membership owners')
     iss.utils.upsert_membership_ownerships()
