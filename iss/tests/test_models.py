@@ -42,6 +42,7 @@ class MockMembersuiteAccount(object):
     def __init__(self, account_num, membersuite_id):
         self.organization = MSOrg(
             {"ID": account_num,
+             "SalesforceID__c": None,
              "LocalID": membersuite_id,
              "Name": "AASHE Test Campus",
              "SortName": "AASHE Test Campus",
@@ -120,6 +121,7 @@ class OrganizationTestCase(TestCase):
         self.matching_org = Organization.objects.create(
             account_num='6faf90e4-000b-c491-b60c-0b3c5398577c',
             membersuite_id=6044,
+            salesforce_id=None,
             org_name='AASHE Test Campus',
             picklist_name='AASHE Test Campus',
             street1='1536 Wynkoop St.',
@@ -143,6 +145,30 @@ class OrganizationTestCase(TestCase):
         self.not_matching_account = MockMembersuiteAccount(
             account_num='6faf90e4-000b-c491-b60c-111111111111',
             membersuite_id=1111
+        )
+        self.no_membersuite_id_account = MockMembersuiteAccount(
+            account_num=None,
+            membersuite_id=None
+        )
+        self.no_membersuite_id_org = Organization.objects.create(
+            account_num=None,
+            membersuite_id=None,
+            salesforce_id="111111",
+            org_name='No Membersuite ID Org',
+            picklist_name='No Membersuite ID Org',
+            street1='',
+            street2='',
+            city='',
+            state='',
+            country='',
+            postal_code='',
+            country_iso=CountryCode.get_iso_country_code('US'),
+            website='',
+            is_defunct=False,
+            org_type=self.test_org_type,
+            stars_participant_status='',
+            primary_email='',
+            exclude_from_website=False,
         )
 
         # Set up a Membership
@@ -215,6 +241,30 @@ class OrganizationTestCase(TestCase):
             self.matching_account.organization
         )
         self.assertEquals(new_membersuite_id, match.membersuite_id)
+
+    def test_upsert_organization_update_by_salesforce_id(self):
+        """Does this correctly update a record if it has no MemberSuite ID
+           but already has a SalesForce entry?
+        """
+        # Check that setUp created the org we need correctly
+        match = Organization.objects.get(salesforce_id="111111")
+        self.assertEqual(match.org_name, 'No Membersuite ID Org')
+        self.assertFalse(match.account_num)
+        self.assertFalse(match.membersuite_id)
+
+        # Now restore those values to the "matching account" and upsert again.
+        # It should update the record in place, so get should still return 1.
+        self.no_membersuite_id_account.organization.extra_data[
+            "SalesforceID__c"] = "111111"
+        self.no_membersuite_id_account.organization.membersuite_id = 9999
+        self.no_membersuite_id_account.organization.account_num = 'asdf'
+        org = Organization.upsert_organization(
+            self.no_membersuite_id_account.organization)
+
+        match = Organization.objects.get(salesforce_id="111111")
+        self.assertEqual(match.org_name, 'AASHE Test Campus')
+        self.assertEqual(match.membersuite_id, 9999)
+        self.assertEqual(match.account_num, 'asdf')
 
     def test_upsert_utils(self):
         """Do the upsert commands within utils.py work
