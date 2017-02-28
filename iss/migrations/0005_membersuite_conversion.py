@@ -15,8 +15,8 @@ class Migration(migrations.Migration):
             name='Membership',
             fields=[
                 ('id', models.CharField(max_length=255, serialize=False, primary_key=True)),
-                ('membership_directory_opt_out', models.BooleanField()),
-                ('receives_membership_benefits', models.BooleanField()),
+                ('membership_directory_opt_out', models.BooleanField(default=False)),
+                ('receives_membership_benefits', models.BooleanField(default=True)),
                 ('current_dues_amount', models.CharField(max_length=255, null=True, blank=True)),
                 ('expiration_date', models.DateField()),
                 ('type', models.CharField(max_length=255)),
@@ -47,6 +47,11 @@ class Migration(migrations.Migration):
         ),
         migrations.AddField(
             model_name='organization',
+            name='membersuite_account_num',
+            field=models.CharField(max_length=255, null=True, blank=True),
+        ),
+        migrations.AddField(
+            model_name='organization',
             name='membersuite_id',
             field=models.IntegerField(null=True, blank=True),
         ),
@@ -63,7 +68,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='organization',
             name='account_num',
-            field=models.CharField(max_length=255, serialize=False, primary_key=True),
+            field=models.AutoField(serialize=False, primary_key=True),
         ),
         migrations.AlterField(
             model_name='organization',
@@ -94,6 +99,16 @@ class Migration(migrations.Migration):
             model_name='organization',
             name='country_iso',
             field=models.CharField(max_length=3, null=True, blank=True),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='is_defunct',
+            field=models.BooleanField(default=False),
+        ),
+        migrations.AlterField(
+            model_name='organization',
+            name='is_member',
+            field=models.BooleanField(default=False),
         ),
         migrations.AlterField(
             model_name='organization',
@@ -173,7 +188,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='membership',
             name='owner',
-            field=models.ForeignKey(to='iss.Organization'),
+            field=models.ForeignKey(to='iss.Organization', null=True),
         ),
         migrations.AddField(
             model_name='membership',

@@ -76,8 +76,10 @@ class OrganizationType(models.Model):
 
 
 class Organization(models.Model):
-    account_num = models.CharField(primary_key=True, max_length=255)
+    account_num = models.AutoField(primary_key=True)
     salesforce_id = models.TextField(blank=True, null=True)
+    membersuite_account_num = models.CharField(blank=True, null=True,
+                                               max_length=255)
     membersuite_id = models.IntegerField(blank=True, null=True)
     org_name = models.TextField(blank=True, null=True)
     picklist_name = models.CharField(max_length=255, blank=True, null=True)
@@ -85,7 +87,8 @@ class Organization(models.Model):
     is_defunct = models.BooleanField(default=False)
     is_member = models.BooleanField(default=False)
     member_type = models.CharField(max_length=255, blank=True, null=True)
-    business_member_level = models.CharField(max_length=255, blank=True, null=True)
+    business_member_level = models.CharField(max_length=255, blank=True,
+                                             null=True)
     sector = models.TextField(blank=True, null=True)
     org_type = models.ForeignKey(OrganizationType)
     carnegie_class = models.TextField(max_length=255, blank=True, null=True)
@@ -129,7 +132,7 @@ class Organization(models.Model):
         )
         try:
             match = Organization.objects.get(
-                account_num=org.account_num)
+                membersuite_account_num=org.account_num)
         except Organization.DoesNotExist:
             match = None
         if org.extra_data["SalesforceID__c"] and not match:
@@ -151,19 +154,10 @@ class Organization(models.Model):
         matching_organization = cls.get_organization_for_id(org=org)
         if not matching_organization:
             matching_organization = Organization(
-                account_num=org.account_num)
+                membersuite_account_num=org.account_num)
             logger.debug('added organization for Id={Id}'.format(
                 Id=org.account_num))
-        if matching_organization.account_num:
-            matching_organization.update_organization(org=org)
-        else:
-            matching_organization.update_organization(org=org)
-            # Query the old org, which will have the SF ID but no account_num
-            old_org = Organization.objects.get(
-                salesforce_id=org.extra_data["SalesforceID__c"],
-                account_num='')
-            # Delete it
-            old_org.delete()
+        matching_organization.update_organization(org=org)
         return matching_organization
 
     def update_organization(self, org):
@@ -174,7 +168,7 @@ class Organization(models.Model):
                          account_num=self.account_num,
                          id=org.account_num))
 
-        self.account_num = org.account_num
+        self.membersuite_account_num = org.account_num
         self.membersuite_id = org.membersuite_id
         self.salesforce_id = org.extra_data["SalesforceID__c"]
         self.org_name = org.org_name
@@ -303,7 +297,7 @@ class Membership(models.Model):
         """Returns the Membership that matches the given ID.
         Returns None if no matching ID is found.
         """
-        logger.debug('getting org type for {id}'.
+        logger.debug('getting membership {id}'.
                      format(id=membership.id))
         try:
             match = Membership.objects.get(id=membership.id)
@@ -316,7 +310,8 @@ class Membership(models.Model):
         """
         logger.debug('updating membership {id}'.format(id=membership.id))
         try:
-            self.owner = Organization.objects.get(account_num=membership.owner)
+            self.owner = Organization.objects.get(
+                membersuite_account_num=membership.owner)
         except Organization.DoesNotExist:
             pass
         self.membership_directory_opt_out = \

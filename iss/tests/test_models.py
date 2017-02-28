@@ -39,9 +39,9 @@ class CountryCodeTestCase(TestCase):
 
 class MockMembersuiteAccount(object):
 
-    def __init__(self, account_num, membersuite_id):
+    def __init__(self, membersuite_account_num, membersuite_id):
         self.organization = MSOrg(
-            {"ID": account_num,
+            {"ID": membersuite_account_num,
              "SalesforceID__c": None,
              "LocalID": membersuite_id,
              "Name": "AASHE Test Campus",
@@ -74,7 +74,7 @@ class MockMembersuiteAccount(object):
         )
         self.membership = MSMember(
             {"ID": '22222222-2222-2222-2222-222222222222',
-             "Owner": account_num,
+             "Owner": membersuite_account_num,
              "MembershipDirectoryOptOut": False,
              "ReceivesMemberBenefits": True,
              "CurrentDuesAmount": "1.0",
@@ -119,7 +119,7 @@ class OrganizationTestCase(TestCase):
         
         # Set up an Organization based on AASHE Test Campus object
         self.matching_org = Organization.objects.create(
-            account_num='6faf90e4-000b-c491-b60c-0b3c5398577c',
+            membersuite_account_num='6faf90e4-000b-c491-b60c-0b3c5398577c',
             membersuite_id=6044,
             salesforce_id=None,
             org_name='AASHE Test Campus',
@@ -139,19 +139,19 @@ class OrganizationTestCase(TestCase):
             exclude_from_website=False,
         )
         self.matching_account = MockMembersuiteAccount(
-            account_num='6faf90e4-000b-c491-b60c-0b3c5398577c',
+            membersuite_account_num='6faf90e4-000b-c491-b60c-0b3c5398577c',
             membersuite_id=6044
         )
         self.not_matching_account = MockMembersuiteAccount(
-            account_num='6faf90e4-000b-c491-b60c-111111111111',
+            membersuite_account_num='6faf90e4-000b-c491-b60c-111111111111',
             membersuite_id=1111
         )
         self.no_membersuite_id_account = MockMembersuiteAccount(
-            account_num=None,
+            membersuite_account_num=None,
             membersuite_id=None
         )
         self.no_membersuite_id_org = Organization.objects.create(
-            account_num=None,
+            membersuite_account_num=None,
             membersuite_id=None,
             salesforce_id="111111",
             org_name='No Membersuite ID Org',
@@ -213,8 +213,8 @@ class OrganizationTestCase(TestCase):
         """
         match = Organization.get_organization_for_id(
             self.matching_account.organization)
-        self.assertEquals(self.matching_org.account_num,
-                          match.account_num)
+        self.assertEquals(self.matching_org.membersuite_account_num,
+                          match.membersuite_account_num)
 
     def test_get_organization_for_id_no_match(self):
         """Is get_organization_for_id graceful when there's no match?
@@ -229,7 +229,7 @@ class OrganizationTestCase(TestCase):
         match = Organization.upsert_organization(
             self.not_matching_account.organization)
         self.assertEquals(self.not_matching_account.organization.account_num,
-                          match.account_num)
+                          match.membersuite_account_num)
 
     def test_upsert_organization_update(self):
         """Does upsert_for_account work when it needs to update a record?
@@ -249,7 +249,7 @@ class OrganizationTestCase(TestCase):
         # Check that setUp created the org we need correctly
         match = Organization.objects.get(salesforce_id="111111")
         self.assertEqual(match.org_name, 'No Membersuite ID Org')
-        self.assertFalse(match.account_num)
+        self.assertFalse(match.membersuite_account_num)
         self.assertFalse(match.membersuite_id)
 
         # Now restore those values to the "matching account" and upsert again.
@@ -264,7 +264,7 @@ class OrganizationTestCase(TestCase):
         match = Organization.objects.get(salesforce_id="111111")
         self.assertEqual(match.org_name, 'AASHE Test Campus')
         self.assertEqual(match.membersuite_id, 9999)
-        self.assertEqual(match.account_num, 'asdf')
+        self.assertEqual(match.membersuite_account_num, 'asdf')
 
     def test_upsert_utils(self):
         """Do the upsert commands within utils.py work
