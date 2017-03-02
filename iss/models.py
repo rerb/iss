@@ -266,12 +266,12 @@ class Membership(models.Model):
     receives_membership_benefits = models.BooleanField(default=True)
     current_dues_amount = models.CharField(max_length=255,
                                            blank=True, null=True)
-    expiration_date = models.DateField()
+    expiration_date = models.DateField(blank=True, null=True)
     type = models.CharField(max_length=255)
     product = models.ForeignKey(MembershipProduct)
     last_modified_date = models.DateField()
     status = models.CharField(max_length=255)
-    join_date = models.DateField()
+    join_date = models.DateField(blank=True, null=True)
     termination_date = models.DateField(blank=True, null=True)
     renewal_date = models.DateField(blank=True, null=True)
     
