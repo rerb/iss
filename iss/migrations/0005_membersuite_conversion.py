@@ -145,7 +145,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organization',
             name='org_type',
-            field=models.ForeignKey(to='iss.OrganizationType'),
+            field=models.ForeignKey(to='iss.OrganizationType', null=True),
         ),
         migrations.AlterField(
             model_name='organization',
