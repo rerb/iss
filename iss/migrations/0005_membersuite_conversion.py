@@ -138,7 +138,11 @@ class Migration(migrations.Migration):
             name='org_name',
             field=models.TextField(null=True, blank=True),
         ),
-        migrations.AlterField(
+        migrations.RemoveField(
+            model_name='organization',
+            name='org_type',
+        ),
+        migrations.AddField(
             model_name='organization',
             name='org_type',
             field=models.ForeignKey(to='iss.OrganizationType'),
