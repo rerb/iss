@@ -30,7 +30,7 @@ setup(
     ],
     install_requires=["Django>=1.4,<1.9",
                       "beatbox==32.1",
-                      "python-membersuite-api-client"],
+                      "python-membersuite-api-client==0.1.8"],
     dependencey_links=[
         "https://github.com/AASHE/python-membersuite-api-client/archive/master.zip"
     ]
