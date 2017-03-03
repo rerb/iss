@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name='iss',
-    version='1.1.5',
+    version='1.1.6',
     description="Ideally Single Source app for Salesforce data.",
     author='Bob Erb',
     author_email='bob.erb@aashe.org',
@@ -30,5 +30,8 @@ setup(
     ],
     install_requires=["Django>=1.4,<1.9",
                       "beatbox==32.1",
-                      "https://github.com/AASHE/python-membersuite-api-client/archive/master.zip"]
+                      "python-membersuite-api-client"],
+    dependencey_links=[
+        "https://github.com/AASHE/python-membersuite-api-client/archive/master.zip"
+    ]
 )
