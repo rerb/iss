@@ -18,11 +18,11 @@ class Migration(migrations.Migration):
                 ('membership_directory_opt_out', models.BooleanField(default=False)),
                 ('receives_membership_benefits', models.BooleanField(default=True)),
                 ('current_dues_amount', models.CharField(max_length=255, null=True, blank=True)),
-                ('expiration_date', models.DateField(blank=True, null=True)),
+                ('expiration_date', models.DateField(null=True, blank=True)),
                 ('type', models.CharField(max_length=255)),
                 ('last_modified_date', models.DateField()),
                 ('status', models.CharField(max_length=255)),
-                ('join_date', models.DateField(blank=True, null=True)),
+                ('join_date', models.DateField(null=True, blank=True)),
                 ('termination_date', models.DateField(null=True, blank=True)),
                 ('renewal_date', models.DateField(null=True, blank=True)),
             ],
@@ -40,6 +40,12 @@ class Migration(migrations.Migration):
                 ('id', models.CharField(max_length=255, serialize=False, primary_key=True)),
                 ('name', models.TextField()),
             ],
+        ),
+        migrations.DeleteModel(
+            name='Domain',
+        ),
+        migrations.DeleteModel(
+            name='DomainToOrg',
         ),
         migrations.RemoveField(
             model_name='organization',
@@ -103,12 +109,12 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='organization',
             name='is_defunct',
-            field=models.BooleanField(default=False),
+            field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
             model_name='organization',
             name='is_member',
-            field=models.BooleanField(default=False),
+            field=models.IntegerField(default=0),
         ),
         migrations.AlterField(
             model_name='organization',

@@ -84,8 +84,8 @@ class Organization(models.Model):
     org_name = models.TextField(blank=True, null=True)
     picklist_name = models.CharField(max_length=255, blank=True, null=True)
     exclude_from_website = models.IntegerField()
-    is_defunct = models.BooleanField(default=False)
-    is_member = models.BooleanField(default=False)
+    is_defunct = models.IntegerField(default=0)
+    is_member = models.IntegerField(default=0)
     member_type = models.CharField(max_length=255, blank=True, null=True)
     business_member_level = models.CharField(max_length=255, blank=True,
                                              null=True)
