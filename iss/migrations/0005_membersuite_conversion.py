@@ -12,6 +12,22 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
+            name='MembershipProduct',
+            fields=[
+                ('id', models.CharField(max_length=255, serialize=False,
+                                        primary_key=True)),
+                ('name', models.CharField(max_length=255)),
+            ],
+        ),
+        migrations.CreateModel(
+            name='OrganizationType',
+            fields=[
+                ('id', models.CharField(max_length=255, serialize=False,
+                                        primary_key=True)),
+                ('name', models.TextField()),
+            ],
+        ),
+        migrations.CreateModel(
             name='Membership',
             fields=[
                 ('id', models.CharField(max_length=255, serialize=False, primary_key=True)),
@@ -25,20 +41,6 @@ class Migration(migrations.Migration):
                 ('join_date', models.DateField(null=True, blank=True)),
                 ('termination_date', models.DateField(null=True, blank=True)),
                 ('renewal_date', models.DateField(null=True, blank=True)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='MembershipProduct',
-            fields=[
-                ('id', models.CharField(max_length=255, serialize=False, primary_key=True)),
-                ('name', models.CharField(max_length=255)),
-            ],
-        ),
-        migrations.CreateModel(
-            name='OrganizationType',
-            fields=[
-                ('id', models.CharField(max_length=255, serialize=False, primary_key=True)),
-                ('name', models.TextField()),
             ],
         ),
         migrations.DeleteModel(
