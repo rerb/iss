@@ -29,5 +29,6 @@ setup(
         'Framework :: Django',
     ],
     install_requires=["Django>=1.4,<1.9",
-                      "beatbox==32.1"]
+                      "beatbox==32.1",
+                      "https://github.com/AASHE/python-membersuite-api-client/archive/master.zip"]
 )
