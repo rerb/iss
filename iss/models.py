@@ -135,12 +135,14 @@ class Organization(models.Model):
                 membersuite_account_num=org.account_num)
         except Organization.DoesNotExist:
             match = None
-        if org.extra_data["SalesforceID__c"] and not match:
+
+        if org.extra_data.has_key("SalesforceID__c") and not match:
             try:
                 match = Organization.objects.get(
                     salesforce_id=org.extra_data["SalesforceID__c"])
             except Organization.DoesNotExist:
                 return None
+
         return match
 
     @classmethod
@@ -170,7 +172,7 @@ class Organization(models.Model):
 
         self.membersuite_account_num = org.account_num
         self.membersuite_id = org.membersuite_id
-        self.salesforce_id = org.extra_data["SalesforceID__c"]
+        self.salesforce_id = org.extra_data.get("SalesforceID__c", None)
         self.org_name = org.org_name
         self.picklist_name = org.picklist_name
 
@@ -256,7 +258,7 @@ class MembershipProduct(models.Model):
             id=product.id))
         self.name = product.name
         self.save()
-    
+
 
 class Membership(models.Model):
 
@@ -274,12 +276,12 @@ class Membership(models.Model):
     join_date = models.DateField(blank=True, null=True)
     termination_date = models.DateField(blank=True, null=True)
     renewal_date = models.DateField(blank=True, null=True)
-    
+
     @classmethod
     def upsert_membership(cls, membership):
         """
         Upserts a Membership from MemberSuite Membership object.
-        
+
         Returns the Membership upserted.
         """
         logger.debug('upserting membership {id}'.format(
