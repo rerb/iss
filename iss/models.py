@@ -136,7 +136,7 @@ class Organization(models.Model):
         except Organization.DoesNotExist:
             match = None
 
-        if org.extra_data.has_key("SalesforceID__c") and not match:
+        if org.extra_data["SalesforceID__c"] and not match:
             try:
                 match = Organization.objects.get(
                     salesforce_id=org.extra_data["SalesforceID__c"])
