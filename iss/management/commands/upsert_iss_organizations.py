@@ -62,7 +62,7 @@ def upsert_organizations_for_recently_modified_accounts(
 
     logger.info('upserting orgs for accounts modified in last {since} days'.
                 format(since=since))
-    iss.utils.upsert_organizations(since, get_all)
+    iss.utils.upsert_organizations(since)
 
     if include_aashe_in_website:
         aashe = iss.models.Organization.objects.get(org_name="AASHE")

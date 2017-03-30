@@ -18,10 +18,13 @@ def upsert_org_types():
         OrganizationType.upsert_org_type(org_type)
 
 
-def upsert_organizations(since, get_all):
-    """Upserts Organizations for MemberSuite objects.
+def upsert_organizations(since, max=None):
     """
-    orgs = ms_session.org_service.get_orgs(get_all=get_all, since_when=since)
+        Upserts Organizations for MemberSuite objects.
+        max is the maximum number of records to return (useful for tests)
+        returns organizations modified since `since` days ago
+    """
+    orgs = ms_session.org_service.get_orgs(max_calls=max, since_when=since, verbose=True)
     if orgs:
         for org in orgs:
             logger.debug('upserting organization for org: "{org}"'.
@@ -32,7 +35,7 @@ def upsert_organizations(since, get_all):
 def upsert_membership_products():
     """Upserts all MembershipProducts
     """
-    products = ms_session.mem_service.get_all_membership_products()
+    products = ms_session.mem_prod_service.get_all_membership_products()
     for product in products:
         logger.debug('upserting membership products')
         MembershipProduct.upsert_membership_product(product=product)

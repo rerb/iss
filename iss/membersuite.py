@@ -5,7 +5,8 @@ from django.conf import settings
 
 from membersuite_api_client.client import ConciergeClient
 from membersuite_api_client.organizations.services import OrganizationService
-from membersuite_api_client.memberships.services import MembershipService
+from membersuite_api_client.memberships.services import (
+    MembershipService, MembershipProductService)
 
 
 class MemberSuiteSession(object):
@@ -18,3 +19,4 @@ class MemberSuiteSession(object):
         self.session_id = self.client.request_session()
         self.org_service = OrganizationService(self.client)
         self.mem_service = MembershipService(self.client)
+        self.mem_prod_service = MembershipProductService(self.client)

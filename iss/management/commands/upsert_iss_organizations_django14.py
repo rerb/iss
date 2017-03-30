@@ -13,15 +13,10 @@ class Command(BaseCommand):
     help = ('Upserts orgs from Membersuite')
     option_list = BaseCommand.option_list + (
         make_option(
-            '--all',
-            dest='a',
-            default=True,
-            help='upsert all organizations'),
-        make_option(
             '-m',
             type=int,
             dest='m',
-            default='7',
+            default=None,
             help='upsert organizations for accounts modified within n-days'),
         make_option(
             '-i',
@@ -34,5 +29,4 @@ class Command(BaseCommand):
         upsert_organizations_for_recently_modified_accounts(
             since=options['m'],
             include_aashe_in_website=options['i'],
-            get_all=options['a'],
         )

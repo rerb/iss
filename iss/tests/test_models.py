@@ -97,7 +97,7 @@ class OrganizationTestCase(TestCase):
     def setUp(self):
         self.country_code = CountryCode.objects.create(
             country_name='Joe', iso_country_code='__')
-        
+
         # Set up an Organization Type
         self.org_type_data = {
             'ID': '11111111-1111-1111-1111-111111111111',
@@ -116,7 +116,7 @@ class OrganizationTestCase(TestCase):
             id='99999999-9999-9999-9999-999999999999',
             name='Super Awesome Mega Membership'
         )
-        
+
         # Set up an Organization based on AASHE Test Campus object
         self.matching_org = Organization.objects.create(
             membersuite_account_num='6faf90e4-000b-c491-b60c-0b3c5398577c',
@@ -278,8 +278,8 @@ class OrganizationTestCase(TestCase):
         qs = MembershipProduct.objects.all()
         # If the upsert command worked, we will have MembershipProduct objects
 
-        upsert_organizations(since=1, get_all=False)
-        upsert_memberships(since=1, get_all=False)
+        upsert_organizations(since=0)
+        upsert_memberships(since=0)
         """ I don't even think there's a test we can do here. At best, once we
         have a sandbox, we can test that it updates zero rows, but for now we
         just run the command to see that no errors occur. If something goes

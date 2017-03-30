@@ -45,13 +45,17 @@ def main():
 
     global_settings.SECRET_KEY = "blahblah"
 
-    django.setup()
-
     from django.test.utils import get_runner
     test_runner = get_runner(global_settings)
 
-    test_runner = test_runner()
-    failures = test_runner.run_tests(['iss'])
+    if django.VERSION > (1, 7):
+        django.setup()
+
+    if django.VERSION > (1, 2):
+        test_runner = test_runner()
+        failures = test_runner.run_tests(['iss'])
+    else:
+        failures = test_runner(['iss'], verbosity=2)
 
     sys.exit(failures)
 
