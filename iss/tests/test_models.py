@@ -278,7 +278,7 @@ class OrganizationTestCase(TestCase):
         qs = MembershipProduct.objects.all()
         # If the upsert command worked, we will have MembershipProduct objects
 
-        upsert_organizations(since=0)
+        upsert_organizations(since=0, max=3)
         upsert_memberships(since=0)
         """ I don't even think there's a test we can do here. At best, once we
         have a sandbox, we can test that it updates zero rows, but for now we

@@ -24,7 +24,8 @@ def upsert_organizations(since, max=None):
         max is the maximum number of records to return (useful for tests)
         returns organizations modified since `since` days ago
     """
-    orgs = ms_session.org_service.get_orgs(max_calls=max, since_when=since, verbose=True)
+    orgs = ms_session.org_service.get_orgs(
+        max_calls=max, since_when=since, verbose=True)
     if orgs:
         for org in orgs:
             logger.debug('upserting organization for org: "{org}"'.
@@ -41,7 +42,7 @@ def upsert_membership_products():
         MembershipProduct.upsert_membership_product(product=product)
 
 
-def upsert_memberships(since, get_all):
+def upsert_memberships(since, get_all=True):
     """Upserts Memberships for MemberSuite objects.
     """
     if not get_all:
