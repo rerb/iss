@@ -4,8 +4,6 @@ import datetime
 from ..models import (CountryCode, Organization, Membership,
                       OrganizationType, MembershipProduct)
 
-import test_org
-
 from membersuite_api_client.organizations.models import Organization as MSOrg
 from membersuite_api_client.memberships.models import Membership as MSMember
 from membersuite_api_client.memberships.models import MembershipProduct \
