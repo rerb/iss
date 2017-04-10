@@ -35,7 +35,6 @@ class OrganizationType(models.Model):
     def upsert_org_type(cls, org_type):
         """
         Upsert an OrganizationType
-
         Returns the OrganizationType upserted
         """
         logger.debug('upserting org type {name} into org type'.format(
@@ -149,7 +148,6 @@ class Organization(models.Model):
     @classmethod
     def upsert_organization(cls, org):
         """Upsert a matching Organization for MemberSuite object.
-
         Returns the Organization upserted.
         """
         logger.debug('upserting org {id}'.format(id=org.account_num))
@@ -226,7 +224,6 @@ class MembershipProduct(models.Model):
     def upsert_membership_product(cls, product):
         """
         Upserts a MembershipProduct from MemberSuite MembershipProduct object.
-
         Returns the MembershipProduct upserted.
         """
         logger.debug('upserting org type {name} into org type'.format(
@@ -282,7 +279,6 @@ class Membership(models.Model):
     def upsert_membership(cls, membership):
         """
         Upserts a Membership from MemberSuite Membership object.
-
         Returns the Membership upserted.
         """
         logger.debug('upserting membership {id}'.format(

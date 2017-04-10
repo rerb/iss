@@ -50,9 +50,7 @@ class Command(BaseCommand):
 def upsert_organizations_for_recently_modified_accounts(
         since=7, include_aashe_in_website=False, get_all=False):
     """Upsert organizations for MS Accounts modified in last `since` days.
-
     First syncs OrganizationType objects, then Organizations.
-
     When `include_aashe_in_website` is true, set the
     `exclude_from_website` flag on the Organization representing AASHE
     to False (0, actually).  (Added for the Hub project.)
