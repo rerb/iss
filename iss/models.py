@@ -27,7 +27,10 @@ class CountryCode(models.Model):
 class Domain(models.Model):
 
     domain_id = models.IntegerField(primary_key=True)
-    name = models.TextField(unique=True)
+    # max_length below is for old MySQL (like the version STARS is
+    # deployed with), which can't guarantee the uniqueness of a
+    # variable length text blob.
+    name = models.TextField(max_length=255, unique=True)
     account_count = models.IntegerField(default=0)
 
     def __repr__(self):
