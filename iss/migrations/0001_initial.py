@@ -22,7 +22,7 @@ class Migration(migrations.Migration):
             name='Domain',
             fields=[
                 ('domain_id', models.IntegerField(serialize=False, primary_key=True)),
-                ('name', models.TextField(unique=True)),
+                # ('name', models.TextField(unique=True, max_length=255)),
                 ('account_count', models.IntegerField(default=0)),
             ],
         ),
