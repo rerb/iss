@@ -9,7 +9,7 @@ def read(fname):
 
 setup(
     name='iss',
-    version='2.3',
+    version='2.4',
     description="Ideally Single Source app for Salesforce data.",
     author='Scott Johnson',
     author_email='scott@aashe.org',
