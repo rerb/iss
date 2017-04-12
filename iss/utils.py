@@ -18,14 +18,18 @@ def upsert_org_types():
         OrganizationType.upsert_org_type(org_type)
 
 
-def upsert_organizations(since, max=None):
+def upsert_organizations(since, get_all=False, max=None):
     """
         Upserts Organizations for MemberSuite objects.
         max is the maximum number of records to return (useful for tests)
         returns organizations modified since `since` days ago
     """
-    orgs = ms_session.org_service.get_orgs(
-        max_calls=max, since_when=since, verbose=True)
+    if not get_all:
+        orgs = ms_session.org_service.get_orgs(
+            max_calls=max, since_when=since, verbose=True)
+    else:
+        orgs = ms_session.org_service.get_orgs(
+            max_calls=max, verbose=True)
     if orgs:
         for org in orgs:
             logger.debug('upserting organization for org: "{org}"'.
