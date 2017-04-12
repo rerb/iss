@@ -9,10 +9,10 @@ def read(fname):
 
 setup(
     name='iss',
-    version='1.1.2',
+    version='2.0',
     description="Ideally Single Source app for Salesforce data.",
-    author='Bob Erb',
-    author_email='bob.erb@aashe.org',
+    author='Scott Johnson',
+    author_email='scott@aashe.org',
     url='https://github.com/aashe/iss',
     long_description=read("README.md"),
     packages=[
