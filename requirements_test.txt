@@ -1,2 +1,5 @@
+beatbox==32.1
 coverage==3.7.1
 coveralls==0.5
+Django>=1.4,<1.11
+https://github.com/AASHE/python-membersuite-api-client/archive/chunk-get-orgs.zip
