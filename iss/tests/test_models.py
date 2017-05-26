@@ -1,7 +1,7 @@
 from django.test import TestCase
 import datetime
 
-from ..models import (CountryCode, Organization, Membership,
+from ..models import (Organization, Membership,
                       OrganizationType, MembershipProduct)
 
 import test_org
@@ -18,23 +18,6 @@ from ..utils import upsert_org_types, \
                     upsert_organizations, \
                     upsert_membership_products, upsert_memberships, \
                     upsert_membership_ownerships
-
-
-class CountryCodeTestCase(TestCase):
-
-    def test_get_iso_country_code(self):
-        """Does get_iso_country_code work?
-        """
-        country = CountryCode.objects.create(country_name='Erbania',
-                                             iso_country_code='__')
-        self.assertEqual('__', CountryCode.get_iso_country_code(
-            country.country_name))
-
-    def test_get_iso_country_code_missing_country(self):
-        """Is get_iso_country_code resilient in the face of a missing country?
-        """
-        self.assertEqual('', CountryCode.get_iso_country_code(
-            country_name='Sorry No Erbania Here'))
 
 
 class MockMembersuiteAccount(object):
@@ -95,9 +78,6 @@ class MockMembersuiteAccount(object):
 class OrganizationTestCase(TestCase):
 
     def setUp(self):
-        self.country_code = CountryCode.objects.create(
-            country_name='Joe', iso_country_code='__')
-
         # Set up an Organization Type
         self.org_type_data = {
             'ID': '11111111-1111-1111-1111-111111111111',
@@ -130,7 +110,6 @@ class OrganizationTestCase(TestCase):
             state='CO',
             country='US',
             postal_code='80202',
-            country_iso=CountryCode.get_iso_country_code('US'),
             website='',
             is_defunct=False,
             org_type=self.test_org_type,
@@ -162,7 +141,6 @@ class OrganizationTestCase(TestCase):
             state='',
             country='',
             postal_code='',
-            country_iso=CountryCode.get_iso_country_code('US'),
             website='',
             is_defunct=False,
             org_type=self.test_org_type,

@@ -1,27 +1,10 @@
 import logging
+import pycountry
 
 from django.db import models
 
 
 logger = logging.getLogger(__name__)
-
-
-class CountryCode(models.Model):
-
-    country_name = models.CharField(max_length=255, unique=True)
-    iso_country_code = models.CharField(max_length=2, unique=True)
-
-    @classmethod
-    def get_iso_country_code(cls, country_name):
-        """Returns ISO 2-digit country code for `country_name`.
-        Returns empty string if `country_name` doesn't match any
-        CountryCodes.
-        """
-        try:
-            country_code = CountryCode.objects.get(country_name=country_name)
-        except CountryCode.DoesNotExist:
-            return ''
-        return country_code.iso_country_code
 
 
 class OrganizationType(models.Model):
@@ -180,12 +163,11 @@ class Organization(models.Model):
             self.street2 = org.street2
             self.city = org.city
             self.state = org.state
-            self.country = org.country
             self.postal_code = org.postal_code
-            self.country_iso = CountryCode.get_iso_country_code(
-                self.country)
             self.latitude = org.latitude
             self.longitude = org.longitude
+
+            self.set_country_from_ms_org(org)
 
         self.website = org.website
 
@@ -213,6 +195,35 @@ class Organization(models.Model):
 
         logger.debug('updated organization {name})'.format(
             name=org.org_name.encode('utf-8')))
+
+    def set_country_from_ms_org(self, ms_org):
+        """
+        Takes a name from salesforce and returns a tuple of the
+        name and the iso code, for example:
+            ("Canada", "CA")
+
+        Countries are stored in Membersuite inconsistently (sometimes
+        stored as "CA" and other times as "Canada".
+
+        This is a best-effort to get the actual country.
+        """
+        self.country, self.country_iso = None, None
+        if ms_org.country:
+            try:
+                # first try the official name
+                pyc = pycountry.countries.get(official_name=ms_org.country)
+            except KeyError:
+                try:
+                    # then try the iso code
+                    pyc = pycountry.countries.get(alpha_2=ms_org.country)
+                except KeyError:
+                    print('*** No country found for: %s' % ms_org.country)
+                    return
+
+            self.country, self.country_iso = (pyc.name, pyc.alpha_2)
+
+        else:
+            print('no country set for %s' % ms_org.org_name)
 
 
 class MembershipProduct(models.Model):
