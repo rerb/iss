@@ -1,5 +1,2 @@
-beatbox==32.1
 coverage==3.7.1
 coveralls==0.5
-Django>=1.4,<1.11
-membersuite-api-client>=0.1.15

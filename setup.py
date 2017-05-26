@@ -7,12 +7,13 @@ import os
 def read(fname):
     return open(os.path.join(os.path.dirname(__file__), fname)).read()
 
+
 setup(
     name='iss',
-    version='2.4.2',
+    version='2.5',
     description="Ideally Single Source app for Salesforce data.",
-    author='Scott Johnson',
-    author_email='scott@aashe.org',
+    author='AASHE',
+    author_email='it@aashe.org',
     url='https://github.com/aashe/iss',
     long_description=read("README.md"),
     packages=[
@@ -28,8 +29,10 @@ setup(
         'Programming Language :: Python :: 2.7',
         'Framework :: Django',
     ],
-    install_requires=["Django>=1.4,<1.9",
-                      "beatbox==32.1",
-                     "membersuite-api-client>=0.1.15",
-                     ]
+    install_requires=[
+        "Django>=1.4,<1.11",
+        "beatbox==32.1",
+        "membersuite-api-client>=0.1.15",
+        "pycountry",
+    ]
 )
