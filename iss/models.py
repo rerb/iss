@@ -164,10 +164,20 @@ class Organization(models.Model):
             self.city = org.city
             self.state = org.state
             self.postal_code = org.postal_code
+            self.set_country_from_ms_org(org)
+
+        if hasattr(org, 'latitude') and org.latitude and org.longitude:
+            # if ms field is populated: ['Mailing_Address']['GeocodeLat']
             self.latitude = org.latitude
             self.longitude = org.longitude
-
-            self.set_country_from_ms_org(org)
+        else:
+            # try the custom lat/lng variables
+            try:
+                self.latitude = org.extra_data['Latitude__c']
+                self.longitude = org.extra_data['Longitude__c']
+            except KeyError:
+                # for some reason these aren't available on every ms org
+                self.latitude = self.longitude = None
 
         self.website = org.website
 

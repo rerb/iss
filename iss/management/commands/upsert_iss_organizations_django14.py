@@ -13,13 +13,13 @@ class Command(BaseCommand):
     help = ('Upserts orgs from Membersuite')
     option_list = BaseCommand.option_list + (
         make_option(
-            '-m',
+            '-m', '--modified-within',
             type=int,
             dest='m',
             default=None,
             help='upsert organizations for accounts modified within n-days'),
         make_option(
-            '-i',
+            '-i', '--include-aashe-in-website',
             dest='i',
             action='store_true',
             help='force AASHE exclude_from_website to be False'),
