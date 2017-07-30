@@ -229,7 +229,7 @@ class Organization(models.Model):
             self.country, self.country_iso = (pyc.name, pyc.alpha_2)
 
         else:
-            print('no country set for %s' % ms_org.org_name.decode("utf-8"))
+            print('no country set for %s' % ms_org.org_name.encode("utf-8"))
 
 
 class MembershipProduct(models.Model):
