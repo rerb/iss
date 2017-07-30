@@ -187,7 +187,8 @@ class Organization(models.Model):
         # HERE'S SOMETHING TO NOTICE:
         # We don't map org.org_type to self.org_type.  We map the
         # institution type to an org type, by name.
-        self.org_type = OrganizationType.objects.get(name=org.institution_type)
+        self.org_type = OrganizationType.objects.get(
+            name=org.extra_data.get("institution_type", ''))
 
         # self.sector = org.Record_Type_Name__c,
         # self.member_type = org.Member_Type__c
