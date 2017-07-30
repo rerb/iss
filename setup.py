@@ -10,8 +10,8 @@ def read(fname):
 
 setup(
     name='iss',
-    version='2.5.3',
-    description="Ideally Single Source app for Salesforce data.",
+    version='2.5.4',
+    description="Ideally Single Source app for MemberSuite data.",
     author='AASHE',
     author_email='it@aashe.org',
     url='https://github.com/aashe/iss',
@@ -30,9 +30,8 @@ setup(
         'Framework :: Django',
     ],
     install_requires=[
-        "Django>=1.4,<1.11",
         "beatbox==32.1",
-        "membersuite-api-client>=0.1.15",
+        "membersuite-api-client==0.4",
         "pycountry",
     ]
 )

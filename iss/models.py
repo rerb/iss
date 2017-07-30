@@ -157,6 +157,7 @@ class Organization(models.Model):
         self.salesforce_id = org.extra_data.get("SalesforceID__c", None)
         self.org_name = org.org_name
         self.picklist_name = org.picklist_name
+        self.institution_type = org.extra_data.get("InstitutionType__c", '')
 
         if org.address:
             self.street1 = org.street1
@@ -166,18 +167,8 @@ class Organization(models.Model):
             self.postal_code = org.postal_code
             self.set_country_from_ms_org(org)
 
-        if hasattr(org, 'latitude') and org.latitude and org.longitude:
-            # if ms field is populated: ['Mailing_Address']['GeocodeLat']
-            self.latitude = org.latitude
-            self.longitude = org.longitude
-        else:
-            # try the custom lat/lng variables
-            try:
-                self.latitude = org.extra_data['Latitude__c']
-                self.longitude = org.extra_data['Longitude__c']
-            except KeyError:
-                # for some reason these aren't available on every ms org
-                self.latitude = self.longitude = None
+        self.latitude = org.extra_data.get('Latitude__c', None)
+        self.longitude = org.extra_data.get('Longitude__c', None)
 
         self.website = org.website
 
@@ -192,7 +183,12 @@ class Organization(models.Model):
         self.exclude_from_website = False
         self.is_defunct = org.is_defunct
         # self.is_member = org.is_aashe_member__c
-        self.org_type = OrganizationType.objects.get(id=org.org_type)
+
+        # HERE'S SOMETHING TO NOTICE:
+        # We don't map org.org_type to self.org_type.  We map the
+        # institution type to an org type, by name.
+        self.org_type = OrganizationType.objects.get(name=org.institution_type)
+
         # self.sector = org.Record_Type_Name__c,
         # self.member_type = org.Member_Type__c
         # self.is_signatory = org.PCCSignatory__c
