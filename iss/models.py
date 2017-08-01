@@ -172,29 +172,32 @@ class Organization(models.Model):
 
         self.website = org.website
 
-        # self.carnegie_class = org.Carnegie_Classification__c
-        # self.class_profile = (
-        #     org.Carnegie_2005_Enrollment_Profile_Text__c)
-
-        # self.enrollment_fte = org.FTE_Enrollment_All_Degrees__c
-        # self.setting = org.Setting__c[:11]
-
-        # self.business_member_level = org.Membership_Level__c
         self.exclude_from_website = False
         self.is_defunct = org.is_defunct
-        # self.is_member = org.is_aashe_member__c
 
         # HERE'S SOMETHING TO NOTICE:
         # We don't map org.org_type to self.org_type.  We map the
         # institution type to an org type, by name.
-        self.org_type = OrganizationType.objects.get(
-            name=org.extra_data.get("institution_type", ''))
+        org_type_array_of_strings = org.extra_data.get(
+            "InstitutionType__c", None)
 
-        # self.sector = org.Record_Type_Name__c,
-        # self.member_type = org.Member_Type__c
-        # self.is_signatory = org.PCCSignatory__c
-        # self.stars_participant_status = ?
-        # self.pilot_participant = org.STARS_Pilot_Participant__c
+        if org_type_array_of_strings:
+            org_type_name = org_type_array_of_strings["string"][0]
+        else:
+            org_type_name = None
+
+        if org_type_name:
+            try:
+                self.org_type = OrganizationType.objects.get(
+                    name=org_type_name)
+            except OrganizationType.DoesNotExist:
+                print(
+                    "No InstitutionType named '{0}' exists.".format(
+                        org_type_name))
+        else:
+            print(
+                "No InstitutionType for Organization '{0}'.".format(
+                    self.org_name))
 
         self.primary_email = org.primary_email
 
