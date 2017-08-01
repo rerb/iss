@@ -74,7 +74,8 @@ def upsert_membership_ownerships():
 
             membership.owner.is_member = True
             membership.owner.member_type = membership.product.name
-            if membership.owner.org_type.name != 'Campus':
+            if (membership.owner.org_type is not None and
+                membership.owner.org_type.name != 'Campus'):
                 if "Leader" in membership.product.name:
                     membership.owner.business_member_level = \
                         "Business Leader"
