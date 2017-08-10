@@ -93,6 +93,7 @@ class Organization(models.Model):
     pilot_participant = models.IntegerField(null=True, blank=True)
     is_signatory = models.IntegerField(null=True, blank=True)
     primary_email = models.CharField(max_length=256, blank=True, null=True)
+    institution_type = models.CharField(max_length=128, blank=True, null=True)
 
     def __unicode__(self):
         return '%s (%s)' % (self.org_name, self.state)
