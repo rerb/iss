@@ -1,5 +1,6 @@
 import logging
 import pycountry
+import yaml
 
 from django.db import models
 
@@ -179,22 +180,21 @@ class Organization(models.Model):
         # HERE'S SOMETHING TO NOTICE:
         # We don't map org.org_type to self.org_type.  We map the
         # institution type to an org type, by name.
-        org_type_array_of_strings = org.extra_data.get(
-            "InstitutionType__c", None)
+        org_type_yaml = yaml.load(str(org.extra_data.get(
+            "InstitutionType__c", "{'string': '[]'}")))
 
-        if org_type_array_of_strings:
-            org_type_name = org_type_array_of_strings["string"][0]
-        else:
-            org_type_name = None
+        yaml_string = org_type_yaml["string"]
 
-        if org_type_name:
+        self.institution_type = yaml_string[0] if yaml_string != "[]" else None
+
+        if self.institution_type:
             try:
                 self.org_type = OrganizationType.objects.get(
-                    name=org_type_name)
+                    name=self.institution_type)
             except OrganizationType.DoesNotExist:
                 print(
                     "No InstitutionType named '{0}' exists.".format(
-                        org_type_name))
+                        self.institution_type))
         else:
             print(
                 "No InstitutionType for Organization '{0}'.".format(
