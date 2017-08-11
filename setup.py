@@ -33,5 +33,6 @@ setup(
         "beatbox==32.1",
         "membersuite_api_client==0.4.1",
         "pycountry",
+	"pyYAML==3.12",
     ]
 )
