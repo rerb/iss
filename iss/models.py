@@ -198,7 +198,7 @@ class Organization(models.Model):
         else:
             print(
                 "No InstitutionType for Organization '{0}'.".format(
-                    self.org_name))
+                    self.org_name.encode("utf-8")))
 
         self.primary_email = org.primary_email
 
