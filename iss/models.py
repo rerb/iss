@@ -159,7 +159,6 @@ class Organization(models.Model):
         self.salesforce_id = org.extra_data.get("SalesforceID__c", None)
         self.org_name = org.org_name
         self.picklist_name = org.picklist_name
-        self.institution_type = org.extra_data.get("InstitutionType__c", '')
 
         if org.address:
             self.street1 = org.street1
@@ -177,28 +176,15 @@ class Organization(models.Model):
         self.exclude_from_website = False
         self.is_defunct = org.is_defunct
 
-        # HERE'S SOMETHING TO NOTICE:
-        # We don't map org.org_type to self.org_type.  We map the
-        # institution type to an org type, by name.
-        org_type_yaml = yaml.load(str(org.extra_data.get(
+        self.org_type = OrganizationType.objects.get(
+            id=org.org_type)
+
+        institution_type_yaml = yaml.load(str(org.extra_data.get(
             "InstitutionType__c", "{'string': '[]'}")))
 
-        yaml_string = org_type_yaml["string"]
+        yaml_string = institution_type_yaml["string"]
 
         self.institution_type = yaml_string[0] if yaml_string != "[]" else None
-
-        if self.institution_type:
-            try:
-                self.org_type = OrganizationType.objects.get(
-                    name=self.institution_type)
-            except OrganizationType.DoesNotExist:
-                print(
-                    "No InstitutionType named '{0}' exists.".format(
-                        self.institution_type))
-        else:
-            print(
-                "No InstitutionType for Organization '{0}'.".format(
-                    self.org_name.encode("utf-8")))
 
         self.primary_email = org.primary_email
 
@@ -228,13 +214,10 @@ class Organization(models.Model):
                     # then try the iso code
                     pyc = pycountry.countries.get(alpha_2=ms_org.country)
                 except KeyError:
-                    print('*** No country found for: %s' % ms_org.country)
+                    print('No country found for: %s' % ms_org.country)
                     return
 
             self.country, self.country_iso = (pyc.name, pyc.alpha_2)
-
-        else:
-            print('no country set for %s' % ms_org.org_name.encode("utf-8"))
 
 
 class MembershipProduct(models.Model):
