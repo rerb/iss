@@ -59,6 +59,7 @@ class OrganizationType(models.Model):
 
 
 class Organization(models.Model):
+    # CAUTION! pk is account_num!
     account_num = models.AutoField(primary_key=True)
     salesforce_id = models.TextField(blank=True, null=True)
     membersuite_account_num = models.CharField(blank=True, null=True,
@@ -100,11 +101,10 @@ class Organization(models.Model):
         return '%s (%s)' % (self.org_name, self.state)
 
     def __repr__(self):
-        return (
-            "<Organization(account_num={acct_num}, "
-            "membersuite_id='{membersuite_id}')>".format(
-                acct_num=self.account_num,
-                membersuite_id=self.membersuite_id))
+        return ("<Organization(account_num={acct_num}, "
+                "membersuite_id='{membersuite_id}')>".format(
+                    acct_num=self.account_num,
+                    membersuite_id=self.membersuite_id))
 
     @classmethod
     def get_organization_for_id(cls, org):
@@ -112,23 +112,12 @@ class Organization(models.Model):
         Returns None if no matching account is found.
         """
         logger.debug('getting organization for Org {id}'.format(
-            id=org.account_num)
-        )
+            id=org.account_num))
         try:
-            match = Organization.objects.get(
+            return Organization.objects.get(
                 membersuite_account_num=org.account_num)
         except Organization.DoesNotExist:
-            match = None
-
-        if ("SalesforceID__c" in org.extra_data and
-                org.extra_data["SalesforceID__c"] and not match):
-            try:
-                match = Organization.objects.get(
-                    salesforce_id=org.extra_data["SalesforceID__c"])
-            except Organization.DoesNotExist:
-                return None
-
-        return match
+            return None
 
     @classmethod
     def upsert_organization(cls, org):
@@ -136,7 +125,6 @@ class Organization(models.Model):
         Returns the Organization upserted.
         """
         logger.debug('upserting org {id}'.format(id=org.account_num))
-
         matching_organization = cls.get_organization_for_id(org=org)
         if not matching_organization:
             matching_organization = Organization(
