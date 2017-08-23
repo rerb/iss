@@ -167,12 +167,17 @@ class Organization(models.Model):
         self.org_type = OrganizationType.objects.get(
             id=org.org_type)
 
-        institution_type_yaml = yaml.load(str(org.extra_data.get(
-            "InstitutionType__c", "{'string': '[]'}")))
-
-        yaml_string = institution_type_yaml["string"]
-
-        self.institution_type = yaml_string[0] if yaml_string != "[]" else None
+        try:
+            institution_type_yaml = yaml.load(
+                str(org.extra_data["InstitutionType__c"]))
+        except KeyError:
+            self.institution_type = None
+        else:
+            yaml_string = institution_type_yaml["string"]
+            try:
+                self.institution_type = yaml_string[0]
+            except IndexError:
+                self.institution_type = None
 
         self.primary_email = org.primary_email
 
