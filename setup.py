@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='iss',
-    version='2.5.9',
+    version='2.5.10',
     description="Ideally Single Source app for MemberSuite data.",
     author='AASHE',
     author_email='it@aashe.org',
@@ -31,7 +31,7 @@ setup(
     ],
     install_requires=[
         "beatbox==32.1",
-        "membersuite_api_client==0.4.2",
+        "membersuite_api_client==0.4.3",
         "pycountry",
         "pyYAML==3.12",
     ]
