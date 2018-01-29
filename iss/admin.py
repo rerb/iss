@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Oganization
+from .models import Organization
 
 class OrganizationAdmin(admin.ModelAdmin):
     fields = ('account_num', 'org_name', 'city', 'state', 'country_iso')
