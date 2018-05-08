@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='iss',
-    version='2.6.3',
+    version='2.7',
     description="Ideally Single Source app for MemberSuite data.",
     author='AASHE',
     author_email='it@aashe.org',
