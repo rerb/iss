@@ -31,7 +31,7 @@ setup(
     ],
     install_requires=[
         "beatbox==32.1",
-        "membersuite_api_client==1.1.4",
+        "membersuite_api_client==1.1.5",
         "pycountry",
         "pyYAML==3.12",
     ]
