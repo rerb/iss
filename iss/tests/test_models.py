@@ -1,10 +1,9 @@
-from django.test import TestCase
 import datetime
+
+from django.test import TestCase
 
 from ..models import (Organization, Membership,
                       OrganizationType, MembershipProduct)
-
-import test_org
 
 from membersuite_api_client.organizations.models import Organization as MSOrg
 from membersuite_api_client.memberships.models import Membership as MSMember
@@ -18,6 +17,8 @@ from ..utils import upsert_org_types, \
                     upsert_organizations, \
                     upsert_membership_products, upsert_memberships, \
                     upsert_membership_ownerships
+
+import test_org
 
 
 class MockMembersuiteAccount(object):
@@ -61,8 +62,8 @@ class MockMembersuiteAccount(object):
              "MembershipDirectoryOptOut": False,
              "ReceivesMemberBenefits": True,
              "CurrentDuesAmount": "1.0",
-             "ExpirationDate": datetime.datetime.now() +
-                               datetime.timedelta(days=1),
+             "ExpirationDate": (datetime.datetime.now() +
+                                datetime.timedelta(days=1)),
              "Product": '99999999-9999-9999-9999-999999999999',
              "Type": '6faf90e4-006a-c1e7-1ac8-0b3c2f7cb3bc',
              "LastModifiedDate": datetime.datetime.now()-datetime.timedelta(
@@ -160,8 +161,8 @@ class OrganizationTestCase(TestCase):
             join_date=datetime.datetime.now() + datetime.timedelta(days=-1),
             expiration_date=datetime.datetime.now() + datetime.timedelta(
                 days=1),
-            last_modified_date=datetime.datetime.now() +
-                               datetime.timedelta(days=-1),
+            last_modified_date=(datetime.datetime.now() +
+                                datetime.timedelta(days=-1)),
             product=self.membership_product
         )
 
@@ -236,13 +237,14 @@ class OrganizationTestCase(TestCase):
             "SalesforceID__c"] = "111111"
         self.no_membersuite_id_account.organization.membersuite_id = 9999
         self.no_membersuite_id_account.organization.account_num = 'asdf'
-        org = Organization.upsert_organization(
+
+        Organization.upsert_organization(
             self.no_membersuite_id_account.organization)
 
-        match = Organization.objects.get(salesforce_id="111111")
-        self.assertEqual(match.org_name, 'AASHE Test Campus')
-        self.assertEqual(match.membersuite_id, 9999)
-        self.assertEqual(match.membersuite_account_num, 'asdf')
+        fresh_match = Organization.objects.get(salesforce_id="111111")
+        self.assertEqual(fresh_match.org_name, 'AASHE Test Campus')
+        self.assertEqual(fresh_match.membersuite_id, 9999)
+        self.assertEqual(fresh_match.membersuite_account_num, 'asdf')
 
     def test_upsert_utils(self):
         """Do the upsert commands within utils.py work
@@ -273,7 +275,7 @@ class OrganizationTestCase(TestCase):
         """Does upsert_membership_product work?
         """
         self.product.name = 'New Product Name'
-        product = MembershipProduct.upsert_membership_product(self.product)
+        MembershipProduct.upsert_membership_product(self.product)
         match = MembershipProduct.objects.get(
             id='99999999-9999-9999-9999-999999999999')
         self.assertEqual(match.name, 'New Product Name')
@@ -288,7 +290,7 @@ class OrganizationTestCase(TestCase):
 
         # Now change the name of it and upsert
         self.product.name = 'New Product Name'
-        product = MembershipProduct.upsert_membership_product(self.product)
+        MembershipProduct.upsert_membership_product(self.product)
         match = MembershipProduct.objects.get(
             id='99999999-9999-9999-9999-999999999999')
         self.assertEqual(match.name, 'New Product Name')
