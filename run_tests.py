@@ -3,8 +3,6 @@ import logging
 import os
 import sys
 
-import django
-
 BASE_PATH = os.path.dirname(__file__)
 
 logging.basicConfig()
@@ -19,17 +17,17 @@ def main():
     """
     sys.exc_clear()
 
+    import django.test.utils
+
     os.environ["DJANGO_SETTINGS_MODULE"] = "django.conf.global_settings"
+
     from django.conf import global_settings
 
     # ISS  Settings:
 
-    global_settings.MS_ACCESS_KEY = os.environ.get('MS_ACCESS_KEY', None)
-    global_settings.MS_SECRET_KEY = os.environ.get('MS_SECRET_KEY', None)
-    global_settings.MS_ASSOCIATION_ID = os.environ.get(
-        'MS_ASSOCIATION_ID', None)
-    global_settings.MS_USER_ID = os.environ.get('MS_USER_ID', None)
-    global_settings.MS_USER_PASS = os.environ.get('MS_USER_PASS', None)
+    global_settings.MS_ACCESS_KEY = os.environ["MS_ACCESS_KEY"]
+    global_settings.MS_SECRET_KEY = os.environ["MS_SECRET_KEY"]
+    global_settings.MS_ASSOCIATION_ID = os.environ["MS_ASSOCIATION_ID"]
     global_settings.INSTALLED_APPS = ('iss',)
 
     global_settings.DATABASES = {
@@ -45,19 +43,19 @@ def main():
 
     global_settings.SECRET_KEY = "blahblah"
 
-    from django.test.utils import get_runner
-    test_runner = get_runner(global_settings)
-
     if django.VERSION > (1, 7):
         django.setup()
 
+    test_runner = django.test.utils.get_runner(global_settings)
+
     if django.VERSION > (1, 2):
-        test_runner = test_runner()
-        failures = test_runner.run_tests(['iss'])
+        failures = test_runner().run_tests(['iss'])
+
     else:
         failures = test_runner(['iss'], verbosity=2)
 
     sys.exit(failures)
+
 
 if __name__ == '__main__':
     main()
