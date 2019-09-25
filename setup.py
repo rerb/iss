@@ -10,7 +10,7 @@ def read(fname):
 
 setup(
     name='iss',
-    version='2.12',
+    version='2.12.1',
     description="Ideally Single Source app for MemberSuite data.",
     author='AASHE',
     author_email='it@aashe.org',
@@ -30,9 +30,10 @@ setup(
         'Framework :: Django',
     ],
     install_requires=[
+        "Django<2",
         "beatbox==32.1",
         "membersuite_api_client==1.1.5",
-        "pycountry",
+        "pycountry>=18.12.8,<19",
         "pyYAML==3.12",
     ]
 )

@@ -188,29 +188,26 @@ class Organization(models.Model):
 
     def set_country_from_ms_org(self, ms_org):
         """
-        Takes a name from salesforce and returns a tuple of the
-        name and the iso code, for example:
-            ("Canada", "CA")
-
         Countries are stored in Membersuite inconsistently (sometimes
         stored as "CA" and other times as "Canada".
 
         This is a best-effort to get the actual country.
         """
-        self.country, self.country_iso = None, None
         if ms_org.country:
-            try:
-                # first try the official name
-                pyc = pycountry.countries.get(official_name=ms_org.country)
-            except KeyError:
-                try:
-                    # then try the iso code
-                    pyc = pycountry.countries.get(alpha_2=ms_org.country)
-                except KeyError:
-                    print('No country found for: %s' % ms_org.country)
-                    return
 
-            self.country, self.country_iso = (pyc.name, pyc.alpha_2)
+            self.country, self.country_iso = None, None
+
+            # first try the official name
+            country = (pycountry.countries.get(official_name=ms_org.country)
+                       or
+                       # then try the iso code
+                       pycountry.countries.get(alpha_2=ms_org.country))
+
+            if country:
+                self.country, self.country_iso = country.name, country.alpha_2
+
+            else:
+                logger.error('No country found for: %s' % ms_org.country)
 
 
 class MembershipProduct(models.Model):
