@@ -2,7 +2,7 @@
 #
 # This is a data migration, which loads into the CountryCode model.
 #
-from __future__ import unicode_literals
+
 
 from django.db import migrations
 
