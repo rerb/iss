@@ -74,7 +74,7 @@ class Organization(models.Model):
     business_member_level = models.CharField(max_length=255, blank=True,
                                              null=True)
     sector = models.TextField(blank=True, null=True)
-    org_type = models.ForeignKey(OrganizationType, null=True)
+    org_type = models.ForeignKey(OrganizationType, null=True, on_delete=models.CASCADE)
     carnegie_class = models.TextField(max_length=255, blank=True, null=True)
     class_profile = models.TextField(blank=True, null=True)
     setting = models.CharField(max_length=33, blank=True, null=True)
