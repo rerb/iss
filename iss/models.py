@@ -263,7 +263,7 @@ class Membership(models.Model):
                                            blank=True, null=True)
     expiration_date = models.DateField(blank=True, null=True)
     type = models.CharField(max_length=255)
-    product = models.ForeignKey(MembershipProduct)
+    product = models.ForeignKey(MembershipProduct, on_delete=models.CASCADE)
     last_modified_date = models.DateField()
     status = models.CharField(max_length=255)
     join_date = models.DateField(blank=True, null=True)
