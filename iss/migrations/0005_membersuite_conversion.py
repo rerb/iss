@@ -145,7 +145,7 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='organization',
             name='org_type',
-            field=models.ForeignKey(to='iss.OrganizationType', null=True),
+            field=models.ForeignKey(to='iss.OrganizationType', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AlterField(
             model_name='organization',
@@ -200,11 +200,11 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='membership',
             name='owner',
-            field=models.ForeignKey(to='iss.Organization', null=True),
+            field=models.ForeignKey(to='iss.Organization', null=True, on_delete=models.SET_NULL),
         ),
         migrations.AddField(
             model_name='membership',
             name='product',
-            field=models.ForeignKey(to='iss.MembershipProduct'),
+            field=models.ForeignKey(to='iss.MembershipProduct', on_delete=models.CASCADE),
         ),
     ]
