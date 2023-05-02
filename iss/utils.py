@@ -1,6 +1,6 @@
 import logging
 
-from models import Organization, OrganizationType, \
+from .models import Organization, OrganizationType, \
     Membership, MembershipProduct
 from .membersuite import MemberSuiteSession
 
