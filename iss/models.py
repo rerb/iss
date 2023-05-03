@@ -173,10 +173,10 @@ class Organization(models.Model):
         except KeyError:
             self.institution_type = None
         else:
-            yaml_string = institution_type_yaml["string"]
             try:
+                yaml_string = institution_type_yaml["string"]
                 self.institution_type = yaml_string[0]
-            except IndexError:
+            except (IndexError, TypeError):
                 self.institution_type = None
 
         self.primary_email = org.primary_email
