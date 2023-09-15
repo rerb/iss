@@ -10,19 +10,33 @@ from .upsert_iss_memberships import upsert_memberships_recently_modified
 class Command(BaseCommand):
     args = '<timeframe>'
     help = ('Upsert Memberships modified in last `since` days')
-    option_list = BaseCommand.option_list + (
-        make_option(
+    # option_list = BaseCommand.option_list + (
+    #     make_option(
+    #         '--all',
+    #         dest='a',
+    #         default=True,
+    #         help='upsert all memberships'),
+    #     make_option(
+    #         '-m',
+    #         type=int,
+    #         dest='m',
+    #         default='7',
+    #         help='upsert memberships modified within n-days'),
+    # )
+
+    def add_arguments(self, parser):
+        parser.add_argument(
             '--all',
             dest='a',
             default=True,
-            help='upsert all memberships'),
-        make_option(
+            help='upsert all memberships')
+
+        parser.add_argument(
             '-m',
             type=int,
             dest='m',
             default='7',
-            help='upsert memberships modified within n-days'),
-    )
+            help='upsert memberships modified within n-days')
 
     def handle(self, *args, **options):
         upsert_memberships_recently_modified(

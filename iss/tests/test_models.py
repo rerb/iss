@@ -1,3 +1,5 @@
+
+from builtins import object
 import datetime
 
 from django.test import TestCase
@@ -18,7 +20,7 @@ from ..utils import upsert_org_types, \
                     upsert_membership_products, upsert_memberships, \
                     upsert_membership_ownerships
 
-import test_org
+from . import test_org
 
 
 class MockMembersuiteAccount(object):
@@ -192,7 +194,7 @@ class OrganizationTestCase(TestCase):
         """
         match = Organization.get_organization_for_id(
             self.matching_account.organization)
-        self.assertEquals(self.matching_org.membersuite_account_num,
+        self.assertEqual(self.matching_org.membersuite_account_num,
                           match.membersuite_account_num)
 
     def test_get_organization_for_id_no_match(self):
@@ -200,14 +202,14 @@ class OrganizationTestCase(TestCase):
         """
         match = Organization.get_organization_for_id(
             self.not_matching_account.organization)
-        self.assertEquals(None, match)
+        self.assertEqual(None, match)
 
     def test_upsert_organization_insert(self):
         """Does upsert_for_account work when it needs to insert a record?
         """
         match = Organization.upsert_organization(
             self.not_matching_account.organization)
-        self.assertEquals(self.not_matching_account.organization.account_num,
+        self.assertEqual(self.not_matching_account.organization.account_num,
                           match.membersuite_account_num)
 
     def test_upsert_organization_update(self):
@@ -219,7 +221,7 @@ class OrganizationTestCase(TestCase):
         match = Organization.upsert_organization(
             self.matching_account.organization
         )
-        self.assertEquals(new_membersuite_id, match.membersuite_id)
+        self.assertEqual(new_membersuite_id, match.membersuite_id)
 
     def test_upsert_organization_update_by_salesforce_id(self):
         """Does this correctly update a record if it has no MemberSuite ID
@@ -306,7 +308,7 @@ class OrganizationTestCase(TestCase):
         """
         match = Membership.get_membership_for_id(
             self.matching_account.membership)
-        self.assertEquals(match.id, '22222222-2222-2222-2222-222222222222')
+        self.assertEqual(match.id, '22222222-2222-2222-2222-222222222222')
 
     def test_upsert_membership_insert(self):
         """Does upsert_membership work when inserting a new object?

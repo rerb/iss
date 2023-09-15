@@ -74,7 +74,7 @@ class Organization(models.Model):
     business_member_level = models.CharField(max_length=255, blank=True,
                                              null=True)
     sector = models.TextField(blank=True, null=True)
-    org_type = models.ForeignKey(OrganizationType, null=True)
+    org_type = models.ForeignKey(OrganizationType, null=True, on_delete=models.CASCADE)
     carnegie_class = models.TextField(max_length=255, blank=True, null=True)
     class_profile = models.TextField(blank=True, null=True)
     setting = models.CharField(max_length=33, blank=True, null=True)
@@ -168,15 +168,15 @@ class Organization(models.Model):
             id=org.org_type)
 
         try:
-            institution_type_yaml = yaml.load(
+            institution_type_yaml = yaml.safe_load(
                 str(org.extra_data["InstitutionType__c"]))
         except KeyError:
             self.institution_type = None
         else:
-            yaml_string = institution_type_yaml["string"]
             try:
+                yaml_string = institution_type_yaml["string"]
                 self.institution_type = yaml_string[0]
-            except IndexError:
+            except (IndexError, TypeError):
                 self.institution_type = None
 
         self.primary_email = org.primary_email
@@ -256,14 +256,14 @@ class MembershipProduct(models.Model):
 class Membership(models.Model):
 
     id = models.CharField(primary_key=True, max_length=255)
-    owner = models.ForeignKey(Organization, null=True)
+    owner = models.ForeignKey(Organization, null=True, on_delete=models.CASCADE)
     membership_directory_opt_out = models.BooleanField(default=False)
     receives_membership_benefits = models.BooleanField(default=True)
     current_dues_amount = models.CharField(max_length=255,
                                            blank=True, null=True)
     expiration_date = models.DateField(blank=True, null=True)
     type = models.CharField(max_length=255)
-    product = models.ForeignKey(MembershipProduct)
+    product = models.ForeignKey(MembershipProduct, on_delete=models.CASCADE)
     last_modified_date = models.DateField()
     status = models.CharField(max_length=255)
     join_date = models.DateField(blank=True, null=True)
