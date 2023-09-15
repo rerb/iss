@@ -168,7 +168,7 @@ class Organization(models.Model):
             id=org.org_type)
 
         try:
-            institution_type_yaml = yaml.load(
+            institution_type_yaml = yaml.safe_load(
                 str(org.extra_data["InstitutionType__c"]))
         except KeyError:
             self.institution_type = None
