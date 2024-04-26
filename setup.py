@@ -30,7 +30,6 @@ setup(
         'Framework :: Django',
     ],
     install_requires=[
-        "Django<2",
         "beatbox==32.1",
         "membersuite_api_client==1.1.5",
         "pycountry>=18.12.8,<19",
